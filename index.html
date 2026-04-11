@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYROX Coach – Dein persönlicher Trainer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --bg2: #161920;
+    --bg3: #1e2230;
+    --accent: #e8ff47;
+    --accent2: #47c8ff;
+    --text: #f0f2f8;
+    --muted: #7a8099;
+    --border: rgba(255,255,255,0.08);
+    --danger: #ff6b6b;
+    --success: #4ecb71;
+    --warn: #ffb347;
+    --card-r: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--text); }
+  .athlete-badge {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .athlete-badge b { color: var(--accent); }
+
+  /* NAV TABS */
+  .nav {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    padding: 14px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: none;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .nav-btn:hover:not(.active) { color: var(--text); }
+
+  /* MAIN */
+  .main { max-width: 960px; margin: 0 auto; padding: 24px 20px 60px; }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--card-r);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* METRIC GRID */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metric {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .metric-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .metric-val.blue { color: var(--accent2); }
+  .metric-val.green { color: var(--success); }
+  .metric-val.warn { color: var(--warn); }
+  .metric-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* WEEK PLAN */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 600px) {
+    .week-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .day-card {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 12px 10px;
+    border-left: 3px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .day-card:hover { border-left-color: var(--accent); transform: translateY(-1px); }
+  .day-card.rest { border-left-color: var(--muted); opacity: 0.6; }
+  .day-card.endurance { border-left-color: var(--accent2); }
+  .day-card.strength { border-left-color: var(--danger); }
+  .day-card.concurrent { border-left-color: var(--accent); }
+  .day-card.hyrox { border-left-color: var(--success); }
+  .day-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .day-type {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 4px;
+    color: var(--text);
+  }
+  .day-duration {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* PHASE TIMELINE */
+  .phase-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .phase-block {
+    flex: 1;
+    min-width: 60px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .phase-block.active-phase { outline: 2px solid var(--accent); }
+  .phase-block:hover { opacity: 0.85; }
+  .phase-block.base { background: rgba(71,200,255,0.15); border: 1px solid rgba(71,200,255,0.3); }
+  .phase-block.build { background: rgba(255,179,71,0.15); border: 1px solid rgba(255,179,71,0.3); }
+  .phase-block.peak { background: rgba(232,255,71,0.15); border: 1px solid rgba(232,255,71,0.3); }
+  .phase-block.taper { background: rgba(78,203,113,0.15); border: 1px solid rgba(78,203,113,0.3); }
+  .phase-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .phase-block.base .phase-name { color: var(--accent2); }
+  .phase-block.build .phase-name { color: var(--warn); }
+  .phase-block.peak .phase-name { color: var(--accent); }
+  .phase-block.taper .phase-name { color: var(--success); }
+  .phase-weeks { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* CHAT */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 480px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--card-r);
+    overflow: hidden;
+  }
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg3) transparent;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .msg.coach {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-radius: 4px 12px 12px 12px;
+  }
+  .msg.user {
+    background: rgba(232,255,71,0.12);
+    border: 1px solid rgba(232,255,71,0.2);
+    align-self: flex-end;
+    border-radius: 12px 4px 12px 12px;
+    color: var(--accent);
+  }
+  .msg-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: var(--muted);
+  }
+  .msg.coach .msg-label { color: var(--accent2); }
+  .chat-input-bar {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: rgba(232,255,71,0.4); }
+  .chat-input::placeholder { color: var(--muted); }
+  .send-btn {
+    background: var(--accent);
+    color: #0d0f14;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+  .send-btn:hover { opacity: 0.85; }
+  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* QUICK QUESTIONS */
+  .quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .quick-btn {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    background: none;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    transition: all 0.2s;
+  }
+  .quick-btn:hover {
+    border-color: rgba(232,255,71,0.4);
+    color: var(--accent);
+    background: rgba(232,255,71,0.05);
+  }
+
+  /* RPE TRACKER */
+  .rpe-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .rpe-label { font-size: 13px; color: var(--muted); min-width: 120px; }
+  .rpe-scale {
+    display: flex;
+    gap: 4px;
+  }
+  .rpe-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Barlow', sans-serif;
+  }
+  .rpe-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rpe-btn.selected { background: var(--accent); color: #0d0f14; border-color: var(--accent); }
+
+  /* PROGRESS BARS */
+  .progress-item { margin-bottom: 16px; }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+  .progress-name { color: var(--text); }
+  .progress-val { color: var(--muted); }
+  .progress-bar-bg {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  /* STATUS BADGE */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .badge.green { background: rgba(78,203,113,0.15); color: var(--success); border: 1px solid rgba(78,203,113,0.3); }
+  .badge.yellow { background: rgba(232,255,71,0.15); color: var(--accent); border: 1px solid rgba(232,255,71,0.3); }
+  .badge.red { background: rgba(255,107,107,0.15); color: var(--danger); border: 1px solid rgba(255,107,107,0.3); }
+  .badge.blue { background: rgba(71,200,255,0.15); color: var(--accent2); border: 1px solid rgba(71,200,255,0.3); }
+
+  /* STATION CARD */
+  .station-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .station-card {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 14px;
+    border-left: 3px solid var(--border);
+  }
+  .station-card.weak { border-left-color: var(--danger); }
+  .station-card.medium { border-left-color: var(--warn); }
+  .station-card.strong { border-left-color: var(--success); }
+  .station-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .station-focus { font-size: 12px; color: var(--muted); }
+
+  /* LOADING */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+  }
+  .dot-anim {
+    display: flex;
+    gap: 3px;
+  }
+  .dot-anim span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: bounce 1.2s infinite;
+  }
+  .dot-anim span:nth-child(2) { animation-delay: 0.2s; }
+  .dot-anim span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+    40% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .section-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  /* WORKOUT DETAIL */
+  .workout-detail {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+    display: none;
+  }
+  .workout-detail.open { display: block; }
+  .exercise-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .exercise-row:last-child { border-bottom: none; }
+  .ex-name { color: var(--text); }
+  .ex-detail { color: var(--muted); }
+  .ex-zone { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+  .zone-1 { background: rgba(71,200,255,0.2); color: var(--accent2); }
+  .zone-2 { background: rgba(78,203,113,0.2); color: var(--success); }
+  .zone-3 { background: rgba(255,179,71,0.2); color: var(--warn); }
+  .zone-4 { background: rgba(255,107,107,0.2); color: var(--danger); }
+  .zone-5 { background: rgba(232,255,71,0.2); color: var(--accent); }
+
+  /* TOGGLE */
+  .toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+  .toggle-arrow { color: var(--muted); transition: transform 0.2s; font-size: 12px; }
+  .toggle-arrow.open { transform: rotate(90deg); }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+  select, input[type="date"] {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    padding: 8px 12px;
+    font-size: 13px;
+    outline: none;
+  }
+  select:focus, input[type="date"]:focus {
+    border-color: rgba(232,255,71,0.4);
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .tip-box {
+    background: rgba(71,200,255,0.08);
+    border: 1px solid rgba(71,200,255,0.2);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+  }
+  .tip-box b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">HYROX <span>Coach</span></div>
+  <div class="athlete-badge">Steven F. · <b>41 J.</b> · VO2max <b>50.8</b> · IAS <b>162bpm</b> · Ziel: <b>&lt;75 Min</b></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('dashboard')">Dashboard</button>
+  <button class="nav-btn" onclick="showSection('plan')">Trainingsplan</button>
+  <button class="nav-btn" onclick="showSection('stationen')">Stationen</button>
+  <button class="nav-btn" onclick="showSection('monitoring')">Monitoring</button>
+  <button class="nav-btn" onclick="showSection('coach')">KI-Coach</button>
+  <button class="nav-btn" onclick="showSection('wissen')">Wissenschaft</button>
+</nav>
+
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="dashboard">
+    <div class="section-title">Dein Überblick</div>
+    <div class="section-sub">Steven Fredrickson · 41 J. · 190 cm / 84,4 kg · Leistungsdiagnostik: Institut für Sport- und Präventivmedizin, Uni Saarland, 21.05.2025</div>
+
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="metric-val">36</div>
+        <div class="metric-label">Wochen bis Dez.</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val blue">50.8</div>
+        <div class="metric-label">VO2max ml/kg/min</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val green">162</div>
+        <div class="metric-label">IAS-HF (bpm)</div>
+      </div>
+      <div class="metric">
+        <div class="metric-val warn">170</div>
+        <div class="metric-label">HRmax gemessen</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">Leistungsdiagnostik · Uni Saarland · 21.05.2025 · Laufband (1% Steigung, 3-Min-Stufen)</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:14px;">
+        <div style="background:var(--bg3); border-radius:8px; padding:12px;">
+          <div style="color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Ruhe-HF</div>
+          <div style="color:var(--text); font-size:22px; font-weight:700; font-family:'Barlow Condensed',sans-serif;">84 bpm</div>
+        </div>
+        <div style="background:var(--bg3); border-radius:8px; padding:12px;">
+          <div style="color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">LT1 · Aerobe Schwelle</div>
+          <div style="color:var(--accent2); font-size:22px; font-weight:700; font-family:'Barlow Condensed',sans-serif;">148 bpm</div>
+          <div style="color:var(--muted); font-size:11px;">9,0 km/h · 1,30 mmol/l Laktat</div>
+        </div>
+        <div style="background:var(--bg3); border-radius:8px; padding:12px;">
+          <div style="color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">IAS · Anaerobe Schwelle</div>
+          <div style="color:var(--warn); font-size:22px; font-weight:700; font-family:'Barlow Condensed',sans-serif;">162 bpm</div>
+          <div style="color:var(--muted); font-size:11px;">12,5 km/h · 4:47 min/km · 3,14 mmol/l · 78% Max</div>
+        </div>
+        <div style="background:var(--bg3); border-radius:8px; padding:12px;">
+          <div style="color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Prognose Halbmarathon</div>
+          <div style="color:var(--success); font-size:22px; font-weight:700; font-family:'Barlow Condensed',sans-serif;">1:45:50</div>
+          <div style="color:var(--muted); font-size:11px;">Marathon: 3:51:51 h</div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:10px;">
+        <b style="color:var(--text)">Laktat-Stufenprofil:</b>
+        5,4 km/h→1,16 · 7,2→0,98 · 9,0→1,30 · 10,8→2,06 · 12,6→3,17 · 14,4→6,10 mmol/l
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <b>Diagnostik-Analyse:</b> VO2max 50,8 ml/kg/min ist eine gute Basis, aber für unter 75 Min brauchst du nach Brandt et al. (2025) noch mehr aerobe Kapazität. Deine IAS liegt bei 78% der Maximalleistung – das Ziel ist 82–85% durch gezieltes Schwellentraining zwischen 148–162 bpm. Dein LDL-Bereich ist klar: unter 137 bpm / unter 8,4 km/h.
+    </div>
+
+    <div class="card">
+      <div class="card-title">Periodisierungsplan · 29. März → Dezember 2026</div>
+      <div class="phase-bar">
+        <div class="phase-block taper active-phase" onclick="showPhase('comeback')" style="flex:0.5;">
+          <div class="phase-name" style="font-size:11px;">Comeback</div>
+          <div class="phase-weeks">Wk 1–2</div>
+          <div class="phase-weeks">Mrz–Apr</div>
+        </div>
+        <div class="phase-block base" onclick="showPhase('base')">
+          <div class="phase-name">Base</div>
+          <div class="phase-weeks">Wk 3–10</div>
+          <div class="phase-weeks">Apr–Jun</div>
+        </div>
+        <div class="phase-block build" onclick="showPhase('build')">
+          <div class="phase-name">Build</div>
+          <div class="phase-weeks">Wk 11–22</div>
+          <div class="phase-weeks">Jun–Sep</div>
+        </div>
+        <div class="phase-block peak" onclick="showPhase('peak')">
+          <div class="phase-name">Peak</div>
+          <div class="phase-weeks">Wk 23–32</div>
+          <div class="phase-weeks">Sep–Nov</div>
+        </div>
+        <div class="phase-block taper" onclick="showPhase('taper')">
+          <div class="phase-name">Taper</div>
+          <div class="phase-weeks">Wk 33–38</div>
+          <div class="phase-weeks">Nov–Dez</div>
+        </div>
+      </div>
+      <div id="phase-info" style="font-size:13px; color: var(--muted); background: var(--bg3); border-radius:8px; padding:14px;">
+        <b style="color:var(--success)">COMEBACK-Phase (Woche 1–2 · ab Sa. 29.03.):</b> Nach Krankheit startest du mit nur 4 Einheiten/Woche. Ausschließlich LDL-Zone unter <b style="color:var(--accent2)">137 bpm</b>. Kein Kraft-Maximum, keine Intervalle. Körper reaktivieren, Immunsystem schonen.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Deine Schwachstellen · Fokus-Analyse</div>
+      <div class="station-grid">
+        <div class="station-card weak">
+          <div class="station-name">Burpee Broad Jump</div>
+          <div class="station-focus">Schwäche · Prio 1</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Explosivkraft + Ausdauer kombiniert. Training: Plyometrie + Lat-Kraft + Tempo-Burpees.</div>
+        </div>
+        <div class="station-card weak">
+          <div class="station-name">Sandbag Lunges</div>
+          <div class="station-focus">Schwäche · Prio 1</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Quad-Ausdauer unter Last. Training: Gewichtete Lunges, Farmers Walk, Bulgarian Split Squat.</div>
+        </div>
+        <div class="station-card weak">
+          <div class="station-name">Laufen (8×1km)</div>
+          <div class="station-focus">Schwäche · Prio 1</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">VO2max + Laufökonomie. Training: Zone-2-Läufe, Schwellen-Intervalle, Tempodauerläufe.</div>
+        </div>
+        <div class="station-card medium">
+          <div class="station-name">SkiErg</div>
+          <div class="station-focus">Mittel · Prio 2</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Oberkörper-Ausdauer. Wöchentlich Technik + Intervalle einplanen.</div>
+        </div>
+        <div class="station-card medium">
+          <div class="station-name">Sled Push/Pull</div>
+          <div class="station-focus">Mittel · Prio 2</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Maximalkraft-Endurance. Regelmäßig sled-spezifische Arbeit.</div>
+        </div>
+        <div class="station-card strong">
+          <div class="station-name">RowErg / Farmers</div>
+          <div class="station-focus">Stärke · Pflege</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Aufrechterhalten. Griff-Kraft und Rumpfstabilität weiterführen.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Schlaf & Erholung · Wissenschaftlicher Kontext</div>
+      <div style="font-size:13px; color:var(--text); margin-bottom:10px;">Du schläfst 6–7 Stunden. Das liegt knapp unter dem sportmedizinisch empfohlenen Optimum (7–9h für Ausdauer-Kraft-Athleten).</div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-name">Schlafqualität</span>
+          <span class="progress-val">6–7h · Grenzwertig</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:62%; background: var(--warn);"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-header">
+          <span class="progress-name">Erholungskapazität (6 Tage/Woche)</span>
+          <span class="progress-val">Erhöhtes Risiko</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width:55%; background: var(--warn);"></div>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--muted); margin-top:8px;">
+        ⚠ Strategie: Tage 5+6 als aktive Erholung (Zone 1 max 45 Min) oder Mobilität planen. HRV morgens messen – bei RMSSD &gt;10% unter deinem Wochenmittel: Intensität reduzieren.
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAININGSPLAN -->
+  <div class="section" id="plan">
+    <div class="section-title">Trainingsplan</div>
+    <div class="section-sub">Woche 1 · Base-Phase · Aerobes Fundament</div>
+
+    <div style="display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;">
+      <select id="phase-select" onchange="updatePlan()">
+        <option value="comeback">⚡ Wiedereinstieg Woche 1 (ab Sa. 29.03.)</option>
+        <option value="comeback2">⚡ Wiedereinstieg Woche 2 (04.–10.04.)</option>
+        <option value="base">Base-Phase (Woche 3–10 · Apr–Jun)</option>
+        <option value="build">Build-Phase (Woche 11–22 · Jun–Sep)</option>
+        <option value="peak">Peak-Phase (Woche 23–32 · Sep–Nov)</option>
+        <option value="taper">Taper-Phase (Woche 33–38 · Nov–Dez)</option>
+      </select>
+      <div style="font-size:13px; color:var(--muted); display:flex; align-items:center;">
+        Klick auf einen Tag für Details
+      </div>
+    </div>
+
+    <div class="week-grid" id="week-grid"></div>
+    <div id="workout-detail-box" class="workout-detail"></div>
+
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">Trainingszone-Legende</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="ex-zone zone-1" style="font-size:12px; padding:4px 10px;">LDL · unter 137 bpm</span>
+        <span class="ex-zone zone-2" style="font-size:12px; padding:4px 10px;">MDL · 138–158 bpm</span>
+        <span class="ex-zone zone-3" style="font-size:12px; padding:4px 10px;">TDL · 159–161 bpm</span>
+        <span class="ex-zone zone-4" style="font-size:12px; padding:4px 10px;">ETL · 161–165 bpm</span>
+        <span class="ex-zone zone-5" style="font-size:12px; padding:4px 10px;">Max · über 165 bpm</span>
+      </div>
+      <div style="font-size:12px; color:var(--muted); margin-top:10px;">
+        <b style="color:var(--text)">Deine exakten Zonen (Uni Saarland Diagnostik, 21.05.2025):</b><br>
+        LDL/RL: unter 8,4 km/h · <b style="color:var(--accent2)">unter 137 bpm</b> &nbsp;|&nbsp;
+        MDL: 8,4–11,9 km/h · <b style="color:var(--success)">138–158 bpm</b> &nbsp;|&nbsp;
+        TDL: 11,9–12,6 km/h · <b style="color:var(--warn)">159–161 bpm</b> &nbsp;|&nbsp;
+        ETL: 12,4–13,4 km/h · <b style="color:var(--danger)">161–165 bpm</b><br>
+        HRmax (gemessen): <b style="color:var(--accent)">170 bpm</b> · IAS: <b style="color:var(--warn)">162 bpm / 12,5 km/h / 4:47 min/km</b> · LT1: <b style="color:var(--accent2)">148 bpm / 9,0 km/h</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATIONEN -->
+  <div class="section" id="stationen">
+    <div class="section-title">Stationsanalyse</div>
+    <div class="section-sub">Alle 8 Hyrox-Stationen · Trainingstipps & Zielzeiten für &lt;75 Min</div>
+
+    <div id="stations-detail"></div>
+  </div>
+
+  <!-- MONITORING -->
+  <div class="section" id="monitoring">
+    <div class="section-title">Trainingsmonitoring</div>
+    <div class="section-sub">RPE-Tracking · HRV-Ampel · Belastungssteuerung</div>
+
+    <div class="tip-box">
+      <b>Session-RPE Methode (Foster et al.):</b> Trainingsbelastung = RPE (1–10) × Dauer (Min). Wochenbelastung &lt;1500 Punkte in Base, 1500–2200 in Build, 2000–2800 in Peak, &lt;1200 in Taper.
+    </div>
+
+    <div class="card">
+      <div class="card-title">Heutige Einheit erfassen</div>
+      <div class="rpe-row">
+        <div class="rpe-label">Einheit auswählen</div>
+        <select id="session-type" style="flex:1;">
+          <option>Zone-2-Lauf</option>
+          <option>Schwellen-Intervalle</option>
+          <option>Krafttraining</option>
+          <option>Hyrox-Simulation</option>
+          <option>Mobility/Erholung</option>
+          <option>SkiErg-Training</option>
+        </select>
+      </div>
+      <div class="rpe-row">
+        <div class="rpe-label">Dauer (Min)</div>
+        <input type="range" min="20" max="120" value="60" id="duration-slider"
+          style="flex:1;" oninput="updateDuration(this.value)">
+        <span id="duration-out" style="color:var(--accent); font-weight:600; min-width:40px; text-align:right;">60 Min</span>
+      </div>
+      <div class="rpe-row" style="flex-wrap:wrap; gap:8px;">
+        <div class="rpe-label">RPE (1–10)</div>
+        <div class="rpe-scale" id="rpe-scale"></div>
+      </div>
+      <div style="margin-top:14px; padding:12px; background:var(--bg3); border-radius:8px; font-size:13px;">
+        <span style="color:var(--muted)">Belastungspunkte: </span>
+        <span id="load-calc" style="color:var(--accent); font-weight:600; font-size:18px;">420</span>
+        <span style="color:var(--muted);"> · Wochenstand: </span>
+        <span id="week-load" style="color:var(--accent2); font-weight:600;">420</span>
+        <span id="load-status" class="badge green" style="margin-left:8px;">Optimal</span>
+      </div>
+      <button onclick="logSession()" style="margin-top:12px; padding:10px 20px; background:var(--accent); color:#0d0f14; border:none; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px; letter-spacing:1px; text-transform:uppercase; cursor:pointer;">
+        Einheit speichern
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">HRV-Ampel · Erholungsstatus</div>
+      <div style="font-size:13px; color:var(--muted); margin-bottom:14px;">Gib deinen heutigen HRV-Wert ein (RMSSD aus deiner Smartwatch):</div>
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+        <input type="number" id="hrv-input" placeholder="z.B. 42" min="10" max="120"
+          style="width:120px;" oninput="updateHRV(this.value)">
+        <div id="hrv-feedback" style="font-size:13px; color:var(--muted);">Wert eingeben...</div>
+      </div>
+      <div style="display:grid; grid-template-columns: repeat(3,1fr); gap:10px; font-size:12px; text-align:center;">
+        <div style="background:rgba(78,203,113,0.1); border:1px solid rgba(78,203,113,0.3); border-radius:8px; padding:10px;">
+          <div style="color:var(--success); font-weight:600; margin-bottom:4px;">GRÜN</div>
+          <div style="color:var(--muted);">&gt; Wochenmittel<br>Volles Training</div>
+        </div>
+        <div style="background:rgba(255,179,71,0.1); border:1px solid rgba(255,179,71,0.3); border-radius:8px; padding:10px;">
+          <div style="color:var(--warn); font-weight:600; margin-bottom:4px;">GELB</div>
+          <div style="color:var(--muted);">±10% Abw.<br>Intensität –20%</div>
+        </div>
+        <div style="background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); border-radius:8px; padding:10px;">
+          <div style="color:var(--danger); font-weight:600; margin-bottom:4px;">ROT</div>
+          <div style="color:var(--muted);">&gt;10% unter Mittel<br>Nur Erholung</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Wochenbelastung · Verlauf</div>
+      <div id="session-log" style="font-size:13px; color:var(--muted);">Noch keine Einheiten erfasst. Logge dein erstes Training oben.</div>
+    </div>
+  </div>
+
+  <!-- KI COACH -->
+  <div class="section" id="coach">
+    <div class="section-title">KI-Coach</div>
+    <div class="section-sub">Powered by Claude · Wissenschaftlich fundiert · Persönlich auf dich abgestimmt</div>
+
+    <div class="chat-container">
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg coach">
+          <div class="msg-label">Coach</div>
+          Hallo Steven! Ich bin dein persönlicher Hyrox-Coach, kalibriert auf deine Leistungsdiagnostik vom 21.05.2025 (Uni Saarland).
+          <br><br>
+          Dein Profil: VO2max 50,8 ml/kg/min · IAS bei 162 bpm / 12,5 km/h · HRmax 170 bpm. Schwächen: Burpees, Sandbag Lunges, Laufen. Ziel: unter 75 Min im Dezember.
+          <br><br>
+          Alle Empfehlungen basieren auf aktuellen Sportwissenschaftsstudien – besonders Brandt et al. (2025), der ersten wissenschaftlichen Hyrox-Studie. Was möchtest du wissen?
+        </div>
+      </div>
+      <div class="quick-btns" id="quick-btns">
+        <button class="quick-btn" onclick="sendQuick('Wie trainiere ich Burpees effektiv für Hyrox?')">Burpee-Training</button>
+        <button class="quick-btn" onclick="sendQuick('Was sagt die Wissenschaft über VO2max-Training für Hyrox?')">VO2max</button>
+        <button class="quick-btn" onclick="sendQuick('Wie plane ich concurrent Training für 6 Tage/Woche?')">Wochenplanung</button>
+        <button class="quick-btn" onclick="sendQuick('Mein Schlaf ist nur 6–7h – was bedeutet das für mein Training?')">Schlaf & Erholung</button>
+        <button class="quick-btn" onclick="sendQuick('Erkläre mir die Interferenz-Theorie beim Concurrent Training')">Interferenz-Effekt</button>
+        <button class="quick-btn" onclick="sendQuick('Wie messe ich meine Fortschritte bis Dezember?')">Fortschrittsmessung</button>
+      </div>
+      <div class="chat-input-bar">
+        <input class="chat-input" id="chat-input" placeholder="Frag deinen Coach..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">Senden ↗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WISSENSCHAFT -->
+  <div class="section" id="wissen">
+    <div class="section-title">Wissensbasis</div>
+    <div class="section-sub">Alle wissenschaftlichen Studien, auf denen dieser Coach basiert</div>
+
+    <div id="sources-list"></div>
+  </div>
+
+</div>
+
+<script>
+const ATHLETE = {
+  name: 'Steven Fredrickson',
+  dob: '15.11.1984', age: 41,
+  gender: 'Mann',
+  height: 190, weight: 84.4, bmi: 23.4,
+  // Gemessene Werte (Uni Saarland, 21.05.2025)
+  hrmax: 170,       // gemessen
+  hrRest: 84,       // Ruhepuls
+  vo2max: 50.8,     // ml/min/kg (berechnet)
+  vo2maxAbs: 4.29,  // l/min
+  // Laktat-Schwellen (exakt aus Diagnostik)
+  lt1_hr: 148,      // ~9 km/h, Laktat 1.30 mmol/l (Knickpunkt)
+  lt1_pace: 9.0,    // km/h
+  ias_hr: 162,      // Individuelle Anaerobe Schwelle
+  ias_pace: 12.5,   // km/h
+  ias_pace_min: '4:47', // min/km
+  ias_laktat: 3.14, // mmol/l an der IAS
+  ias_pct: 78,      // % der Maximalleistung
+  // Laufband-Stufenwerte
+  stufen: [
+    {pace:5.4, hr:108, laktat:1.16},
+    {pace:7.2, hr:126, laktat:0.98},
+    {pace:9.0, hr:148, laktat:1.30},
+    {pace:10.8, hr:154, laktat:2.06},
+    {pace:12.6, hr:160, laktat:3.17},
+    {pace:14.4, hr:170, laktat:6.10},
+  ],
+  // Trainingszonen (exakt aus Diagnostik)
+  zones: {
+    ldl: {name:'LDL/RL', paceMin:'unter 8.4 km/h', per1k:'langsamer 7:09', hrMax:137},
+    mdl: {name:'MDL', paceMin:'8.4–11.9 km/h', per1k:'7:09–5:03 min', hrMin:138, hrMax:158},
+    tdl: {name:'TDL', paceMin:'11.9–12.6 km/h', per1k:'5:03–4:45 min', hrMin:159, hrMax:161},
+    etl: {name:'ETL', paceMin:'12.4–13.4 km/h', per1k:'4:50–4:29 min', hrMin:161, hrMax:165},
+  },
+  // Prognosen
+  halbmarathon: '1:45:50',
+  marathon: '3:51:51',
+  // Training
+  trainDays: 6, level: 'erfahren',
+  sleep: '6-7h', goal: '<75min',
+  weaknesses: ['Burpees','Sandbag Lunges','Laufen'],
+  experience: '3-5 Rennen',
+  diagDate: '21.05.2025'
+};
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  if(id==='plan') updatePlan();
+  if(id==='stationen') renderStations();
+  if(id==='wissen') renderSources();
+}
+
+const phaseData = {
+  comeback: {
+    info: `<b style="color:var(--success)">WIEDEREINSTIEG (Woche 1–2 · ab Sa. 29.03.):</b> Nach Krankheit: NUR 4 Einheiten/Woche. Ausschließlich LDL-Zone unter <b style="color:var(--accent2)">137 bpm</b>. Kein Kraft-Maximum, keine Intervalle. Körper reaktivieren, Immunsystem schonen. Wissenschaftlich: mind. 1 Woche Rückkehr pro Woche Krankheit.`,
+    days: [
+      {name:'Sa',type:'endurance',label:'START · Erster Lauf nach Krankheit',dur:'30–40 Min',exercises:[
+        {name:'Aufwärmen',detail:'5 Min Gehen · unter 100 bpm',zone:'zone-1'},
+        {name:'Lockerer LDL-Lauf',detail:'25–30 Min · STRIKT unter 130 bpm · Tempo egal!',zone:'zone-2'},
+        {name:'Cool-down + Dehnen',detail:'5–10 Min',zone:'zone-1'},
+        {name:'Wie fühlst du dich?',detail:'RPE sollte 4–5 sein. Wenn mehr → sofort abbrechen.',zone:'zone-1'}
+      ]},
+      {name:'So',type:'rest',label:'Ruhe · HRV beobachten',dur:'–',exercises:[
+        {name:'Vollständige Ruhe',detail:'HRV morgens messen – ist sie stabil?',zone:'zone-1'},
+        {name:'Spaziergang optional',detail:'Nur wenn du dich gut fühlst · unter 110 bpm',zone:'zone-1'}
+      ]},
+      {name:'Mo',type:'rest',label:'Ruhe / optional leicht',dur:'–',exercises:[
+        {name:'Ruhetag',detail:'Nach dem ersten Lauf: 1 Tag Pause',zone:'zone-1'}
+      ]},
+      {name:'Di',type:'strength',label:'Sanftes Körpergewicht-Kraft',dur:'40 Min',exercises:[
+        {name:'Bodyweight Squat',detail:'3×12 · langsam · keine Gewichte',zone:'zone-2'},
+        {name:'Ausfallschritte ohne Last',detail:'3×10 je Seite · Technik ⚡',zone:'zone-2'},
+        {name:'Liegestütz angepasst',detail:'3×8–10 · keine Erschöpfung',zone:'zone-2'},
+        {name:'Plank',detail:'3×30 Sek · leicht',zone:'zone-1'},
+        {name:'RPE-Check',detail:'Maximal 5/10 – du kommst gerade erst zurück!',zone:'zone-1'}
+      ]},
+      {name:'Mi',type:'rest',label:'Ruhetag',dur:'–',exercises:[
+        {name:'Vollständige Ruhe oder Spaziergang',detail:'HRV messen · unter 110 bpm',zone:'zone-1'}
+      ]},
+      {name:'Do',type:'endurance',label:'LDL · Zweiter Lauf',dur:'35–45 Min',exercises:[
+        {name:'LDL-Lauf',detail:'30–40 Min · unter 137 bpm · etwas mehr als Sa?',zone:'zone-2'},
+        {name:'Barometercheck',detail:'Puls unter Kontrolle? Atmung frei? Kein Husten?',zone:'zone-1'},
+        {name:'Cool-down',detail:'5 Min Gehen + Dehnen',zone:'zone-1'}
+      ]},
+      {name:'Fr',type:'rest',label:'Ruhetag',dur:'–',exercises:[
+        {name:'Vollständige Ruhe',detail:'Regeneration vor Woche 2',zone:'zone-1'}
+      ]}
+    ]
+  },
+  comeback2: {
+    info: `<b style="color:var(--success)">WIEDEREINSTIEG Woche 2 · 4 Einheiten:</b> Wenn Woche 1 gut lief: Dauer leicht steigern. Erste leichte Krafteinheit mit Gewichten (konservativ). Noch KEINE Intervalle, noch KEIN Volltraining. HRV und Befinden bestimmen das Tempo.`,
+    days: [
+      {name:'Sa',type:'endurance',label:'LDL · Länger',dur:'45–50 Min',exercises:[
+        {name:'LDL-Lauf',detail:'40–45 Min · unter 137 bpm · locker',zone:'zone-2'},
+        {name:'Strides optional',detail:'Nur wenn du dich TOP fühlst: 4×80m',zone:'zone-3'},
+        {name:'Cool-down',detail:'5–10 Min Gehen',zone:'zone-1'}
+      ]},
+      {name:'So',type:'rest',label:'Ruhe',dur:'–',exercises:[
+        {name:'Vollständige Ruhe',detail:'HRV messen',zone:'zone-1'}
+      ]},
+      {name:'Mo',type:'rest',label:'Ruhetag',dur:'–',exercises:[
+        {name:'Ruhetag',detail:'',zone:'zone-1'}
+      ]},
+      {name:'Di',type:'strength',label:'Kraft · Leichte Gewichte',dur:'50 Min',exercises:[
+        {name:'Goblet Squat',detail:'3×10 · leichtes Gewicht · Sandbag-Vorbereitung ⚡',zone:'zone-2'},
+        {name:'Romanian Deadlift',detail:'3×8 · 50–60% 1RM · kein Maximum',zone:'zone-3'},
+        {name:'Ausfallschritte mit Gewicht',detail:'3×8 je Seite · leicht ⚡',zone:'zone-2'},
+        {name:'Farmers Carry',detail:'2×30m · leicht',zone:'zone-2'},
+        {name:'Plank',detail:'3×40 Sek',zone:'zone-1'}
+      ]},
+      {name:'Mi',type:'rest',label:'Ruhetag',dur:'–',exercises:[
+        {name:'Mobilität / Stretching',detail:'20–30 Min optional',zone:'zone-1'}
+      ]},
+      {name:'Do',type:'hyrox',label:'Erste Station-Technik',dur:'45 Min',exercises:[
+        {name:'Burpee Broad Jump – NUR Technik',detail:'3×8 Wdh · langsam · KEINE Erschöpfung ⚡',zone:'zone-2'},
+        {name:'Sandbag Lunges – NUR Technik',detail:'3×15m · leichtes Gewicht ⚡',zone:'zone-2'},
+        {name:'SkiErg locker',detail:'2×3 Min · unter 137 bpm · Technik',zone:'zone-2'}
+      ]},
+      {name:'Fr',type:'rest',label:'Ruhetag',dur:'–',exercises:[
+        {name:'Vollständige Ruhe',detail:'Letzte Pause vor Woche 3',zone:'zone-1'}
+      ]}
+    ]
+  },
+  base: {
+    info: `<b style="color:var(--accent2)">BASE-Phase (Woche 3–10 · ab Woche 3):</b> Jetzt 6 Einheiten/Woche. Aerobes Fundament aufbauen. 70–80% unter LT1 = <b style="color:var(--accent2)">148 bpm / 9,0 km/h</b>. LDL-Zone: unter 137 bpm. Progression max +5–10%/Woche.`,
+    days: [
+      {name:'Mo',type:'endurance',label:'LDL · Langer Dauerlauf',dur:'60 Min',exercises:[
+        {name:'Warm-up Gehen',detail:'10 Min · unter 110 bpm',zone:'zone-1'},
+        {name:'Langer Dauerlauf',detail:'40 Min · STRIKT unter 137 bpm (LDL-Zone)',zone:'zone-2'},
+        {name:'Cool-down + Stretching',detail:'10 Min',zone:'zone-1'}
+      ]},
+      {name:'Di',type:'strength',label:'Krafttraining A',dur:'75 Min',exercises:[
+        {name:'Squat',detail:'4×6 · 70% 1RM',zone:'zone-3'},
+        {name:'Romanian Deadlift',detail:'3×8',zone:'zone-3'},
+        {name:'Bulgarian Split Squat',detail:'3×10 je Seite · Sandbag-Vorbereitung ⚡',zone:'zone-3'},
+        {name:'Plank + Rumpf',detail:'3 Sets',zone:'zone-2'}
+      ]},
+      {name:'Mi',type:'endurance',label:'SkiErg + Row · MDL',dur:'60 Min',exercises:[
+        {name:'SkiErg Technik',detail:'4×2 Min · Pause 2 Min · 138–158 bpm (MDL)',zone:'zone-3'},
+        {name:'Rowing steady',detail:'15 Min · unter 137 bpm (LDL)',zone:'zone-2'},
+        {name:'Farmers Carry',detail:'3×40m · leicht',zone:'zone-2'}
+      ]},
+      {name:'Do',type:'concurrent',label:'Concurrent · 90 Min',dur:'90 Min',exercises:[
+        {name:'Kraft zuerst',detail:'Interferenz-Prinzip: Kraft vor Ausdauer (Wissenschaft)',zone:'zone-1'},
+        {name:'Deadlift',detail:'4×5 · schwer',zone:'zone-4'},
+        {name:'Push Press',detail:'3×8',zone:'zone-3'},
+        {name:'MDL-Lauf danach',detail:'20 Min · 138–158 bpm nach Kraft',zone:'zone-3'}
+      ]},
+      {name:'Fr',type:'hyrox',label:'Stationstraining',dur:'75 Min',exercises:[
+        {name:'Burpee Broad Jump',detail:'5×10 Wdh · Technik + Tempo · PRIO ⚡',zone:'zone-4'},
+        {name:'Sandbag Lunges',detail:'4×20m · moderates Gewicht · PRIO ⚡',zone:'zone-3'},
+        {name:'Wall Balls',detail:'3×20 Wdh',zone:'zone-3'},
+        {name:'Sled Push',detail:'3×20m',zone:'zone-4'}
+      ]},
+      {name:'Sa',type:'endurance',label:'Langer LDL · 90 Min',dur:'90 Min',exercises:[
+        {name:'Langer Dauerlauf',detail:'70–75 Min · STRIKT unter 137 bpm (LDL)',zone:'zone-2'},
+        {name:'Strides',detail:'6×100m am Ende · kurz über 162 bpm',zone:'zone-4'}
+      ]},
+      {name:'So',type:'rest',label:'Aktive Erholung',dur:'30–45 Min',exercises:[
+        {name:'Mobility & Foam Rolling',detail:'20 Min',zone:'zone-1'},
+        {name:'Spaziergang',detail:'20–30 Min · unter 110 bpm',zone:'zone-1'},
+        {name:'HRV messen + Wochencheck',detail:'RMSSD aus Smartwatch auswerten',zone:'zone-1'}
+      ]}
+    ]
+  },
+  build: {
+    info: `<b style="color:var(--warn)">BUILD-Phase (Woche 9–20):</b> Intensität steigern. 60% LDL/MDL, 30% TDL/ETL, 10% über IAS. Schwellentraining: <b style="color:var(--warn)">159–162 bpm (TDL-Zone)</b> für IAS-Verschiebung. Stationsspezifische Kraft-Ausdauer. +15% Volumen ggü. Base.`,
+    days: [
+      {name:'Mo',type:'endurance',label:'TDL · Schwellen-Intervalle',dur:'70 Min',exercises:[
+        {name:'Warm-up',detail:'15 Min · unter 137 bpm',zone:'zone-1'},
+        {name:'6×1km Intervalle',detail:'159–161 bpm (TDL-Zone) · ca. 5:03–4:45 min/km',zone:'zone-4'},
+        {name:'Cool-down',detail:'10 Min · LDL',zone:'zone-1'}
+      ]},
+      {name:'Di',type:'strength',label:'Maximalkraft B',dur:'75 Min',exercises:[
+        {name:'Deadlift',detail:'5×3 · 85% 1RM',zone:'zone-5'},
+        {name:'Hip Thrust',detail:'4×8',zone:'zone-4'},
+        {name:'Lunges gewichtet',detail:'4×12 je Seite',zone:'zone-4'},
+        {name:'Sled Pull',detail:'4×30m',zone:'zone-4'}
+      ]},
+      {name:'Mi',type:'endurance',label:'MDL-Lauf + SkiErg',dur:'75 Min',exercises:[
+        {name:'MDL-Lauf',detail:'30 Min · 138–158 bpm',zone:'zone-2'},
+        {name:'SkiErg-Intervalle',detail:'6×500m · 159–161 bpm (TDL)',zone:'zone-4'}
+      ]},
+      {name:'Do',type:'concurrent',label:'Hyrox-Spezifisch · 90 Min',dur:'90 Min',exercises:[
+        {name:'Rennsimulation Segmente',detail:'Kraft-Blöcke + Lauf-Übergänge trainieren',zone:'zone-4'},
+        {name:'2× [1km Lauf + Burpees 10 Wdh]',detail:'Wettkampfpace · über 162 bpm (ETL) ⚡',zone:'zone-5'},
+        {name:'2× [1km Lauf + Sandbag Lunges 25m]',detail:'⚡ Schwäche-Fokus',zone:'zone-4'}
+      ]},
+      {name:'Fr',type:'strength',label:'Krafttraining C',dur:'75 Min',exercises:[
+        {name:'Squat Variationen',detail:'5×5 · schwer',zone:'zone-4'},
+        {name:'Push Press + Pull',detail:'Superset 4×8',zone:'zone-3'},
+        {name:'Farmer Carry',detail:'4×40m · schwer',zone:'zone-4'}
+      ]},
+      {name:'Sa',type:'hyrox',label:'Halbe Rennsimulation',dur:'90 Min',exercises:[
+        {name:'4×1km Lauf + 4 Stationen',detail:'Erste Hälfte Wettkampf · Wettkampftempo',zone:'zone-4'},
+        {name:'Übergänge trainieren',detail:'Zeit messen · Pacing-Strategie',zone:'zone-3'}
+      ]},
+      {name:'So',type:'rest',label:'Aktive Erholung',dur:'30 Min',exercises:[
+        {name:'Yoga / Mobility',detail:'30 Min · unter 110 bpm',zone:'zone-1'},
+        {name:'HRV + Session-RPE Wochenauswertung',detail:'Belastungspunkte checken',zone:'zone-1'}
+      ]}
+    ]
+  },
+  peak: {
+    info: `<b style="color:var(--accent)">PEAK-Phase (Woche 21–30):</b> Maximale Wettkampfspezifität. Vollständige Rennsimulationen. Wettkampfpace = über 162 bpm (ETL/Max). HRV und Schlaf KRITISCH beobachten. Volumen leicht reduziert, Qualität maximal.`,
+    days: [
+      {name:'Mo',type:'endurance',label:'ETL · Wettkampfpace',dur:'60 Min',exercises:[
+        {name:'Warm-up',detail:'10 Min · LDL',zone:'zone-1'},
+        {name:'8×1km Wettkampfpace',detail:'161–165 bpm (ETL-Zone) · Lauf-Simulation',zone:'zone-5'},
+        {name:'Cool-down',detail:'10 Min',zone:'zone-1'}
+      ]},
+      {name:'Di',type:'strength',label:'Kraft-Power',dur:'60 Min',exercises:[
+        {name:'Power Clean / Jump Squat',detail:'5×3 · explosiv',zone:'zone-5'},
+        {name:'Box Jumps',detail:'4×5',zone:'zone-5'},
+        {name:'Weighted Lunges schwer',detail:'4×8 je Seite ⚡',zone:'zone-4'}
+      ]},
+      {name:'Mi',type:'rest',label:'Aktive Erholung',dur:'30–45 Min',exercises:[
+        {name:'Leichtes Radfahren oder Schwimmen',detail:'LDL · unter 137 bpm',zone:'zone-1'},
+        {name:'Foam Rolling',detail:'',zone:'zone-1'}
+      ]},
+      {name:'Do',type:'hyrox',label:'Vollrennsimulation · 90 Min',dur:'90 Min',exercises:[
+        {name:'Vollständige Hyrox-Simulation',detail:'Alle 8 Stationen + 8×1km · Wettkampftempo',zone:'zone-4'},
+        {name:'Zeitmessung aller Segmente',detail:'Schwache Übergänge identifizieren',zone:'zone-4'}
+      ]},
+      {name:'Fr',type:'strength',label:'Technisch-spezifisch',dur:'45 Min',exercises:[
+        {name:'Burpee Technik unter Ermüdung',detail:'⚡ nach kurzer Laufrunde · Fokus Technik',zone:'zone-3'},
+        {name:'Sandbag Lunges Technik',detail:'⚡ Gleichmäßiges Tempo halten',zone:'zone-3'},
+        {name:'Core-Stabilität',detail:'Plank-Variationen',zone:'zone-2'}
+      ]},
+      {name:'Sa',type:'endurance',label:'MDL-Regeneration',dur:'50 Min',exercises:[
+        {name:'Regenerativer MDL-Lauf',detail:'50 Min · 138–158 bpm',zone:'zone-2'}
+      ]},
+      {name:'So',type:'rest',label:'Komplett Pause',dur:'–',exercises:[
+        {name:'Vollständige Ruhe',detail:'Kein Training',zone:'zone-1'},
+        {name:'HRV-Messung + Analyse',detail:'Bereit für neue Woche?',zone:'zone-1'}
+      ]}
+    ]
+  },
+  taper: {
+    info: `<b style="color:var(--success)">TAPER-Phase (Woche 31–36):</b> Volumen –40–60%, Intensität HALTEN. Körper lädt auf. Keine neuen Reize mehr. Schlaf priorisieren (Ziel: 7–8h). Letzte Rennsimulation 3 Wochen vor Wettkampf.`,
+    days: [
+      {name:'Mo',type:'endurance',label:'Kurzer LDL',dur:'40 Min',exercises:[
+        {name:'Lockerer LDL',detail:'35 Min · unter 137 bpm · keine Intensität',zone:'zone-2'}
+      ]},
+      {name:'Di',type:'strength',label:'Kraft frisch halten',dur:'45 Min',exercises:[
+        {name:'Squat + Deadlift',detail:'3×3 · 75% 1RM · Frisch bleiben, nicht ermüden',zone:'zone-3'},
+        {name:'Lunges leicht',detail:'2×10 je Seite ⚡',zone:'zone-2'}
+      ]},
+      {name:'Mi',type:'rest',label:'Erholung',dur:'30 Min',exercises:[
+        {name:'Mobility + Stretching',detail:'30 Min · unter 110 bpm',zone:'zone-1'}
+      ]},
+      {name:'Do',type:'hyrox',label:'Kurze Wettkampf-Aktivierung',dur:'45 Min',exercises:[
+        {name:'2×1km Wettkampfpace + 2 Stationen',detail:'ETL-Zone · kurz und scharf',zone:'zone-4'},
+        {name:'Übergänge mentalisieren',detail:'Race-Plan durchdenken',zone:'zone-2'}
+      ]},
+      {name:'Fr',type:'rest',label:'Vollständige Pause',dur:'0',exercises:[
+        {name:'Spaziergang optional',detail:'unter 110 bpm',zone:'zone-1'}
+      ]},
+      {name:'Sa',type:'endurance',label:'Aktivierungslauf',dur:'30 Min',exercises:[
+        {name:'Aktivierungslauf',detail:'20–25 Min · MDL-Zone 138–158 bpm',zone:'zone-2'},
+        {name:'Strides',detail:'4×80m · Beine wachrütteln',zone:'zone-4'}
+      ]},
+      {name:'So',type:'rest',label:'Ruhe / Race Day',dur:'–',exercises:[
+        {name:'Vollständige Ruhe ODER Wettkampf',detail:'Race Day – alles gegeben!',zone:'zone-5'}
+      ]}
+    ]
+  }
+};
+
+let currentDay = null;
+
+function updatePlan() {
+  const phase = document.getElementById('phase-select').value;
+  const data = phaseData[phase];
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = '';
+  const detailBox = document.getElementById('workout-detail-box');
+  detailBox.classList.remove('open');
+  detailBox.innerHTML = '';
+
+  data.days.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = `day-card ${d.type}`;
+    el.innerHTML = `<div class="day-name">${d.name}</div><div class="day-type">${d.label}</div><div class="day-duration">${d.dur}</div>`;
+    el.onclick = () => showWorkout(d, i);
+    grid.appendChild(el);
+  });
+}
+
+function showWorkout(d, idx) {
+  const box = document.getElementById('workout-detail-box');
+  if(currentDay === idx && box.classList.contains('open')) {
+    box.classList.remove('open');
+    currentDay = null;
+    return;
+  }
+  currentDay = idx;
+  box.classList.add('open');
+  let html = `<div style="font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:700; letter-spacing:1px; margin-bottom:12px; color:var(--text);">${d.name} · ${d.label} · ${d.dur}</div>`;
+  d.exercises.forEach(ex => {
+    html += `<div class="exercise-row"><span class="ex-name">${ex.name}</span><div style="display:flex;gap:8px;align-items:center;"><span class="ex-detail">${ex.detail}</span><span class="ex-zone ${ex.zone}">${ex.zone.replace('zone-','Z')}</span></div></div>`;
+  });
+  box.innerHTML = html;
+}
+
+function showPhase(phase) {
+  const info = document.getElementById('phase-info');
+  const phaseInfoTexts = {
+    comeback: `<b style="color:var(--success)">COMEBACK Woche 1 (ab Sa. 29.03.):</b> 4 Einheiten, nur LDL unter <b style="color:var(--accent2)">137 bpm</b>. Kein Kraft-Maximum, keine Intervalle. Körper reaktivieren nach Krankheit.`,
+    base: phaseData.base.info,
+    build: phaseData.build.info,
+    peak: phaseData.peak.info,
+    taper: phaseData.taper.info
+  };
+  info.innerHTML = phaseInfoTexts[phase] || phaseData[phase]?.info || '';
+  document.querySelectorAll('.phase-block').forEach(b => b.classList.remove('active-phase'));
+  event.target.classList.add('active-phase');
+}
+
+const stationsData = [
+  {name:'SkiErg',dist:'1×1000m',weight:'–',targetTime:'3:30–4:00',priority:'Mittel',color:'medium',
+   tips:['Gleichmäßiger Zug, Rumpf stabil','Atemrhythmus: 2 Züge pro Zug','Training: 6×500m, 4×1000m Intervalle'],
+   muscle:'Latissimus, Trizeps, Bauch, Hüftbeuger'},
+  {name:'Sled Push',dist:'2×25m',weight:'102kg (Open)',targetTime:'1:30–2:00',priority:'Mittel',color:'medium',
+   tips:['Niedriger Körperschwerpunkt','Kurze schnelle Schritte','Training: Regelmäßig Sled-Arbeit + Squat-Kraft'],
+   muscle:'Quadrizeps, Gesäß, Waden, Kernmuskulatur'},
+  {name:'Sled Pull',dist:'2×25m',weight:'78kg (Open)',targetTime:'2:00–2:30',priority:'Mittel',color:'medium',
+   tips:['Rückwärts gehen – stabile Körperspannung','Starker Griffzug','Training: Farmer Carry + Rowing + Sled Pull'],
+   muscle:'Rücken, Bizeps, Gesäß, Hamstrings'},
+  {name:'Burpee Broad Jump',dist:'80m',weight:'–',targetTime:'4:00–5:30',priority:'SCHWÄCHE · Prio 1',color:'weak',
+   tips:['DEINE HAUPTSCHWÄCHE – gezieltes Training 2×/Woche','Technik: Schultern über Hände beim Aufstehen','Tempo: Gleichmäßig, nicht anfangs sprinten','Training: Plyometrie, Burpee-Intervalle 5×10'],
+   muscle:'Gesäß, Schultern, Brust, Trizeps, Sprungkraft'},
+  {name:'Rowing Ergometer',dist:'1×1000m',weight:'–',targetTime:'3:30–4:00',priority:'Stärke',color:'strong',
+   tips:['Drive-Phase: Beine zuerst, dann Rücken, dann Arme','2:00 min/500m Schnitt anpeilen','Training: Steady-State + Intervalle'],
+   muscle:'Rücken, Beine, Rumpf, Arme'},
+  {name:'Farmers Carry',dist:'2×25m',weight:'2×24kg (Open)',targetTime:'1:00–1:30',priority:'Stärke',color:'strong',
+   tips:['Aufrechter Rumpf, Schultern zurück','Schnelle Schritte, Kettlebells nah am Körper','Training: Heavy Carry, Grip-Übungen'],
+   muscle:'Unterarme, Trapezius, Rumpfstabilität'},
+  {name:'Sandbag Lunges',dist:'2×25m',weight:'20kg (Open)',targetTime:'3:30–4:30',priority:'SCHWÄCHE · Prio 1',color:'weak',
+   tips:['DEINE HAUPTSCHWÄCHE – spezifisches Training nötig','Knie 90°, Oberkörper aufrecht','Sandsack auf Schulter oder Umarmung','Training: Bulgarian Split Squat, Goblet Squat, Gewichtete Lunges täglich'],
+   muscle:'Quadrizeps, Gesäß, Balance, Rumpf'},
+  {name:'Wall Balls',dist:'100 Wdh',weight:'6kg an 3m Wand',targetTime:'3:00–4:00',priority:'Mittel',color:'medium',
+   tips:['Rhythmus finden – nicht absetzen','Squat-Tiefe vollständig ausführen','Training: Goblet Squat, Thrusters, Wall Ball-Sets'],
+   muscle:'Gesäß, Quadrizeps, Schultern, Ausdauer'}
+];
+
+function renderStations() {
+  const el = document.getElementById('stations-detail');
+  el.innerHTML = stationsData.map(s => `
+    <div class="card" style="border-left: 3px solid ${s.color==='weak'?'var(--danger)':s.color==='strong'?'var(--success)':'var(--warn)'};">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:700; letter-spacing:1px;">${s.name}</div>
+          <div style="font-size:12px; color:var(--muted);">${s.dist} · ${s.weight} · Muskulatur: ${s.muscle}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="badge ${s.color==='weak'?'red':s.color==='strong'?'green':'yellow'}">${s.priority}</span>
+          <div style="font-size:13px; color:var(--muted); margin-top:4px;">Zielzeit: <b style="color:var(--accent);">${s.targetTime}</b></div>
+        </div>
+      </div>
+      <div style="font-size:13px; color:var(--text);">
+        ${s.tips.map(t => `<div style="padding:4px 0; border-bottom:1px solid var(--border);">→ ${t}</div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+let rpeValue = 7;
+let weekLoad = 0;
+let sessions = [];
+
+function initRPE() {
+  const scale = document.getElementById('rpe-scale');
+  scale.innerHTML = '';
+  for(let i=1; i<=10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'rpe-btn' + (i===rpeValue?' selected':'');
+    btn.textContent = i;
+    btn.onclick = () => {
+      rpeValue = i;
+      document.querySelectorAll('.rpe-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      updateLoad();
+    };
+    scale.appendChild(btn);
+  }
+}
+
+function updateDuration(v) {
+  document.getElementById('duration-out').textContent = v + ' Min';
+  updateLoad();
+}
+
+function updateLoad() {
+  const dur = parseInt(document.getElementById('duration-slider').value);
+  const load = rpeValue * dur;
+  document.getElementById('load-calc').textContent = load;
+  const total = weekLoad + load;
+  document.getElementById('week-load').textContent = total;
+  const status = document.getElementById('load-status');
+  const phase = 'base';
+  if(total < 800) { status.className='badge blue'; status.textContent='Zu niedrig'; }
+  else if(total <= 1500) { status.className='badge green'; status.textContent='Optimal'; }
+  else if(total <= 2000) { status.className='badge yellow'; status.textContent='Hoch'; }
+  else { status.className='badge red'; status.textContent='Überbelastung!'; }
+}
+
+function logSession() {
+  const type = document.getElementById('session-type').value;
+  const dur = parseInt(document.getElementById('duration-slider').value);
+  const load = rpeValue * dur;
+  weekLoad += load;
+  sessions.push({type, dur, rpe: rpeValue, load});
+  try {
+    const stored = JSON.parse(localStorage.getItem('hyrox_sessions') || '[]');
+    stored.push({type, dur, rpe: rpeValue, load, date: new Date().toISOString()});
+    localStorage.setItem('hyrox_sessions', JSON.stringify(stored.slice(-50)));
+  } catch(e) {}
+  const log = document.getElementById('session-log');
+  log.innerHTML = sessions.map((s,i) =>
+    `<div class="exercise-row"><span class="ex-name">${i+1}. ${s.type}</span><span class="ex-detail">${s.dur} Min · RPE ${s.rpe} · <b style="color:var(--accent)">${s.load} Punkte</b></span></div>`
+  ).join('') + `<div style="padding-top:12px; color:var(--muted); font-size:12px;">Wochengesamtbelastung: <b style="color:var(--accent); font-size:16px;">${weekLoad}</b> Punkte</div>`;
+  updateLoad();
+}
+
+function loadSessionsLocal() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('hyrox_sessions') || '[]');
+    if (!stored.length) return;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    stored.forEach(s => {
+      sessions.push({type: s.type, dur: s.dur, rpe: s.rpe, load: s.load});
+      if (new Date(s.date) > oneWeekAgo) weekLoad += s.load;
+    });
+    const log = document.getElementById('session-log');
+    log.innerHTML = sessions.map((s,i) =>
+      `<div class="exercise-row"><span class="ex-name">${i+1}. ${s.type}</span><span class="ex-detail">${s.dur} Min · RPE ${s.rpe} · <b style="color:var(--accent)">${s.load} Punkte</b></span></div>`
+    ).join('') + `<div style="padding-top:12px; color:var(--muted); font-size:12px;">Wochengesamtbelastung: <b style="color:var(--accent); font-size:16px;">${weekLoad}</b> Punkte</div>`;
+    updateLoad();
+  } catch(e) {}
+}
+
+function updateHRV(v) {
+  const val = parseInt(v);
+  const feedback = document.getElementById('hrv-feedback');
+  if(!val || val < 10) { feedback.textContent = 'Wert eingeben...'; return; }
+  if(val >= 45) { feedback.innerHTML = '<span style="color:var(--success)">✓ GRÜN – Volles Training heute möglich.</span>'; }
+  else if(val >= 35) { feedback.innerHTML = '<span style="color:var(--warn)">⚠ GELB – Intensität um 20% reduzieren.</span>'; }
+  else { feedback.innerHTML = '<span style="color:var(--danger)">✗ ROT – Nur aktive Erholung. Kein intensives Training!</span>'; }
+}
+
+const sources = [
+  {title:'Brandt et al. (2025)', subtitle:'Erste wissenschaftliche Hyrox-Studie', journal:'Frontiers in Physiology / PubMed (PMC11994925)', key:'VO2max stärkster Prädiktor · Ausdauervolumen · Körperfettanteil · Hyrox ist HIFT mit Ausdauer-Schwerpunkt', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC11994925/'},
+  {title:'HYROX Sports Science Report (2025)', subtitle:'Offizieller Wissenschaftsbericht von HYROX', journal:'hyrox.com/the-science-of-hyrox/', key:'Praxisnahe Erkenntnisse aus Wettkampfdaten · Laufeffizienz · Stationsanalyse', url:'https://hyrox.com/the-science-of-hyrox/'},
+  {title:'Scoping Review HIFT (2025)', subtitle:'High Intensity Functional Training in Hybrid Competitions', journal:'PMC12550923 · 39 Studien (2015–2025)', key:'HIFT verbessert aerobe Kapazität, Muskelkraft, anaerobe Leistung · Periodisierung essentiell', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC12550923/'},
+  {title:'Gao & Yu (2023)', subtitle:'Trainingssequenz & VO2max · Meta-Analyse', journal:'Frontiers in Physiology / PMC9908959 · 19 RCTs · 482 Probanden', key:'Reihenfolge Kraft/Ausdauer hat keinen signifikanten VO2max-Effekt · Individuelle Ziele bestimmen Sequenz', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9908959/'},
+  {title:'ScienceDirect (2025)', subtitle:'Interferenzeffekt beim Concurrent Training', journal:'ScienceDirect · Theoretisches Modell', key:'Kraft vor Ausdauer minimiert Interferenz · Mindestabstand 3h bei gleicher Session · MICT nach Kraft', url:'https://www.sciencedirect.com/science/article/abs/pii/S0306987725000532'},
+  {title:'PMC9518107 (2022)', subtitle:'12-Wochen Concurrent Training · ATR Block-Periodisierung', journal:'PMC · 30 Freizeit-Läufer RCT', key:'Concurrent Training an nicht-aufeinanderfolgenden Tagen → keine Hemmung von Kraft- oder Ausdaueradaptation', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9518107/'},
+  {title:'PMC5950732 (2018)', subtitle:'HIIT vs. Continuous Training im Concurrent Setting', journal:'PMC · Hochtrainierte Athleten', key:'VO2max verbessert nur in HIIT-Gruppe · HIIT zeiteffizienter bei gleichem Kraftgewinn', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC5950732/'},
+  {title:'Foster et al. (1998–2001)', subtitle:'Session-RPE Methode zur Trainingsbelastungsquantifizierung', journal:'Journal of Strength & Conditioning Research', key:'RPE × Dauer = valides Belastungsmaß · Korrelation r=0.75–0.90 mit Herzfrequenz-Zonen', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC4213373/'},
+  {title:'MDPI Sensors (2025)', subtitle:'HRV-Monitoring per Smartwatch · Narrative Review', journal:'MDPI Sensors · PMC · Athleten-Monitoring', key:'RMSSD = robust & praktikabel · Tägliche HRV-Messung überlegen · Wochenmittel + Variationskoeffizient nutzen', url:'https://www.mdpi.com/1424-8220/26/1/3'},
+  {title:'PMC11359207 (2024)', subtitle:'Trainingssequenz & Ausdauerleistung · Systematic Review', journal:'PMC · 15 Studien · 426 Probanden', key:'Beide Sequenzen (Kraft-vor-Ausdauer, Ausdauer-vor-Kraft) verbessern Ausdauer · Sequenz nicht entscheidend', url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC11359207/'},
+  {title:'MDPI (2025)', subtitle:'Charakterisierung des Hyrox-Athletenprofils', journal:'Applied Sciences / MDPI · DOI: 10.3390/app15211169', key:'Metabolische Flexibilität zentral · Periodisierung von Volumen/Intensität/Erholung zur Übertrainings-Prävention', url:'https://www.mdpi.com/2076-3417/15/21/11693'},
+  {title:'Lactate Threshold Testing (CTS)', subtitle:'Laktattest-Protokoll & Trainingssteuerung', journal:'Carmichael Training Systems · US Olympic Committee', key:'LT1/LT2 als Intensitätsgrenzen · HRmax-Formel · Regelmäßige Tests 2–4×/Jahr empfohlen', url:'https://trainright.com/the-performance-benefits-of-lactate-threshold-testing-and-training/'}
+];
+
+function renderSources() {
+  const el = document.getElementById('sources-list');
+  el.innerHTML = sources.map((s,i) => `
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:700; letter-spacing:0.5px;">${i+1}. ${s.title}</div>
+          <div style="font-size:13px; color:var(--accent2); margin-top:2px;">${s.subtitle}</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px;">${s.journal}</div>
+        </div>
+        <a href="${s.url}" target="_blank" style="font-size:12px; color:var(--accent); text-decoration:none; border:1px solid rgba(232,255,71,0.3); padding:4px 10px; border-radius:6px; white-space:nowrap;">Studie öffnen ↗</a>
+      </div>
+      <div style="font-size:12px; color:var(--muted); margin-top:10px; padding-top:10px; border-top:1px solid var(--border);">
+        <b style="color:var(--text);">Kernaussagen:</b> ${s.key}
+      </div>
+    </div>
+  `).join('');
+}
+
+const systemPrompt = `Du bist ein erfahrener Hyrox-Trainer und Sportwissenschaftler. Du coachst Steven Fredrickson mit folgendem exakten Profil:
+
+PERSÖNLICHE DATEN:
+- Name: Steven Fredrickson, geb. 15.11.1984 (41 Jahre)
+- Körper: 190 cm / 84,4 kg / BMI 23,4
+
+LEISTUNGSDIAGNOSTIK (Institut für Sport- und Präventivmedizin, Uni Saarland, 21.05.2025, Laufband 1% Steigung):
+- HRmax (gemessen): 170 bpm
+- Ruhe-HF: 84 bpm
+- VO2max: 50,8 ml/min/kg (4,29 l/min)
+- LT1 (aerobe Schwelle): 148 bpm bei 9,0 km/h, Laktat 1,30 mmol/l
+- IAS (individuelle anaerobe Schwelle): 162 bpm bei 12,5 km/h (4:47 min/km), Laktat 3,14 mmol/l, 78% Maximalleistung
+- Laktat-Stufenprofil: 5,4km/h→1,16 | 7,2→0,98 | 9,0→1,30 | 10,8→2,06 | 12,6→3,17 | 14,4→6,10 mmol/l
+- Prognose Halbmarathon: 1:45:50 h | Marathon: 3:51:51 h
+
+EXAKTE TRAININGSZONEN (aus Diagnostik):
+- LDL/RL (Regeneration/langer Dauerlauf): unter 8,4 km/h | unter 137 bpm
+- MDL (mittlerer Dauerlauf): 8,4–11,9 km/h | 138–158 bpm
+- TDL (Tempodauerlauf): 11,9–12,6 km/h | 159–161 bpm
+- ETL (extensive Tempoläufe): 12,4–13,4 km/h | 161–165 bpm
+
+HYROX-PROFIL:
+- Erfahrung: 3–5 Rennen absolviert
+- Ziel: unter 75 Minuten, Dezember 2026 (~36 Wochen)
+- Hauptschwächen: Burpee Broad Jump, Sandbag Lunges, Laufen (Ausdauer)
+- Equipment: Vollausgestattetes Fitnessstudio
+- Wearable: HRV-fähige Smartwatch
+- Trainingstage: 6 Tage/Woche möglich (je 2× 90 Min, Rest 60 Min)
+- Schlaf: 6–7 Stunden (unter Optimum – erhöhtes Übertrainingsrisiko)
+
+AKTUELLER STATUS (März 2026):
+- Steven war krank und startet am Sa. 29.03.2026 mit dem Training
+- Woche 1+2: NUR 4 Einheiten/Woche, ausschließlich LDL unter 137 bpm + sanfte Kraft
+- Ab Woche 3: schrittweise auf 6 Einheiten steigern (Base-Phase)
+- Comeback-Regel: mind. 1 Woche Rückkehr pro Woche Krankheit
+- Base (Woche 1–8, Apr–Mai): Aerobe Basis, unter 148 bpm / 9 km/h, +5–10% Volumen/Woche max
+- Build (Woche 9–20, Jun–Aug): Schwellentraining 148–162 bpm, stationsspezifisch
+- Peak (Woche 21–30, Sep–Okt): Rennsimulationen, hohe Spezifität
+- Taper (Woche 31–36, Nov–Dez): Volumen –40%, Intensität halten
+
+WISSENSCHAFTLICHE WISSENSBASIS:
+1. Brandt et al. (2025, Frontiers Physiology): VO2max + Ausdauervolumen = stärkste Hyrox-Prädiktoren
+2. HIFT Scoping Review (2025, PMC12550923): aerobe Kapazität, Kraft, anaerobe Leistung durch HIFT
+3. Gao & Yu (2023): Trainingssequenz-Metaanalyse – Kraft vor Ausdauer für Kraftziele
+4. Interferenz-Modell (2025): Kraft vor Ausdauer, mind. 3h Abstand, MICT nach Kraft
+5. Foster et al.: Session-RPE = RPE × Minuten, Wochenoptimum Base: 1000–1500 Punkte
+6. HRV-Review (2025): RMSSD täglich messen, bei >10% unter Wochenmittel → Intensität reduzieren
+7. Laktat-Schwellen-Studie (2025, PMC12354492): RPE + HR kombiniert für Zonensteuerung
+
+WICHTIGE TRAININGSREGELN FÜR STEVEN:
+- Lauf-Zonen immer mit echten bpm aus Diagnostik angeben (nicht schätzen)
+- Bei Burpees: 2× pro Woche spezifisch, Kombination mit 200–400m Lauf nach jeder Einheit
+- Sandbag Lunges: Bulgarian Split Squat, Goblet Squat, Gewichtete Lunges wöchentlich
+- Schlaf 6–7h: Volumen konservativ, HRV-gesteuertes Training, bei Rot nur Erholung
+- VO2max-Ziel: von 50,8 auf 54–56 ml/kg/min durch 2× HIIT/Woche (Intervalle über 162 bpm)
+- IAS-Ziel: von 78% auf 82–85% durch TDL-Training (159–161 bpm, 3× 20 Min/Woche in Build)
+
+Antworte immer:
+- Auf Deutsch, direkt und motivierend
+- Mit konkreten Herzfrequenz-Zahlen aus Stevens Diagnostik
+- Personalisiert und praktisch umsetzbar
+- Max. 280 Wörter, gut strukturiert
+- Verweise auf Studien wenn relevant, aber ohne akademischen Tonfall`;
+
+let chatHistory = [];
+
+async function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  addMessage(msg, 'user');
+  chatHistory.push({role:'user', content: msg});
+  await getCoachResponse();
+}
+
+function sendQuick(text) {
+  document.getElementById('chat-input').value = text;
+  sendMsg();
+}
+
+function addMessage(text, role) {
+  const box = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-label">${role==='coach'?'Coach':'Du'}</div>${text}`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+async function getCoachResponse() {
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  const box = document.getElementById('chat-messages');
+  const loadDiv = document.createElement('div');
+  loadDiv.className = 'msg coach';
+  loadDiv.innerHTML = `<div class="msg-label">Coach</div><div class="loading"><div class="dot-anim"><span></span><span></span><span></span></div> Weiterleiten...</div>`;
+  box.appendChild(loadDiv);
+  box.scrollTop = box.scrollHeight;
+  await new Promise(r => setTimeout(r, 800));
+  const lastMsg = chatHistory[chatHistory.length-1]?.content || '';
+  loadDiv.innerHTML = `<div class="msg-label">Coach</div>
+    Diese Frage beantworte ich dir direkt in <b style="color:var(--accent)">Claude.ai</b>! 
+    Kopiere einfach deine Frage und schick sie mir dort:<br><br>
+    <div style="background:var(--bg2); border:1px solid rgba(232,255,71,0.3); border-radius:8px; padding:10px; margin:8px 0; font-size:13px; color:var(--accent); word-break:break-all;">${lastMsg}</div>
+    <a href="https://claude.ai" target="_blank" style="display:inline-block; margin-top:8px; padding:8px 16px; background:var(--accent); color:#0d0f14; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:1px; text-decoration:none;">Claude.ai öffnen ↗</a>`;
+  btn.disabled = false;
+  box.scrollTop = box.scrollHeight;
+}
+
+updatePlan();
+initRPE();
+updateLoad();
+loadSessionsLocal();
+checkReminders();
+</script>
+
+<style>
+.reminder-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999; padding: 20px;
+}
+.reminder-box {
+  background: var(--bg2); border-radius: 16px;
+  border: 1px solid var(--border); max-width: 380px; width: 100%;
+  padding: 24px; animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.reminder-icon {
+  font-size: 36px; text-align: center; margin-bottom: 12px;
+}
+.reminder-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text);
+  text-align: center; margin-bottom: 8px;
+}
+.reminder-text {
+  font-size: 13px; color: var(--muted); text-align: center;
+  line-height: 1.6; margin-bottom: 20px;
+}
+.reminder-steps {
+  background: var(--bg3); border-radius: 10px;
+  padding: 14px; margin-bottom: 20px;
+}
+.reminder-step {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text);
+}
+.reminder-step:last-child { border-bottom: none; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); color: #0d0f14;
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.reminder-btn-row {
+  display: flex; gap: 8px;
+}
+.reminder-btn {
+  flex: 1; padding: 12px;
+  border-radius: 10px; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; cursor: pointer; border: none;
+}
+.reminder-btn.primary { background: var(--accent); color: #0d0f14; }
+.reminder-btn.secondary {
+  background: var(--bg3); color: var(--muted);
+  border: 1px solid var(--border);
+}
+.reminder-btn:hover { opacity: 0.85; }
+</style>
+
+<script>
+function checkReminders() {
+  const now = new Date();
+  const hour = now.getHours();
+  const day = now.getDay(); // 0 = Sonntag
+  const today = now.toDateString();
+  const thisWeek = `${now.getFullYear()}-W${getWeekNumber(now)}`;
+
+  const hrvDone = localStorage.getItem('hrv_done') === today;
+  const checkinDone = localStorage.getItem('checkin_done') === thisWeek;
+
+  // Priorität: Sonntags-Check-in hat Vorrang
+  if (day === 0 && !checkinDone) {
+    showCheckinReminder(thisWeek);
+  } else if (!hrvDone) {
+    showHRVReminder(today);
+  }
+}
+
+function getWeekNumber(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1)/7);
+}
+
+function showHRVReminder(today) {
+  const now = new Date();
+  const hour = now.getHours();
+  // Nur morgens zwischen 5 und 11 Uhr anzeigen
+  if (hour < 5 || hour > 11) return;
+
+  const html = `
+    <div class="reminder-overlay" id="reminder-overlay">
+      <div class="reminder-box">
+        <div class="reminder-icon">📱</div>
+        <div class="reminder-title">Guten Morgen, Steven!</div>
+        <div class="reminder-text">
+          Bevor du aufstehst – HRV messen. Dauert 60 Sekunden und bestimmt die Intensität deines heutigen Trainings.
+        </div>
+        <div class="reminder-steps">
+          <div class="reminder-step">
+            <div class="step-num">1</div>
+            <div>Apple Watch: <b style="color:var(--text)">Atemübung-App</b> öffnen → 1 Min ruhig atmen</div>
+          </div>
+          <div class="reminder-step">
+            <div class="step-num">2</div>
+            <div>HRV-Wert (RMSSD) in <b style="color:var(--text)">Apple Health</b> ablesen</div>
+          </div>
+          <div class="reminder-step">
+            <div class="step-num">3</div>
+            <div>Wert ins <b style="color:var(--accent)">Monitoring</b> eintragen → Ampel zeigt dir ob volles Training möglich</div>
+          </div>
+        </div>
+        <div class="reminder-btn-row">
+          <button class="reminder-btn secondary" onclick="dismissReminder('hrv', '${today}')">Später</button>
+          <button class="reminder-btn primary" onclick="goToMonitoring('${today}')">Zum Monitoring ↗</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function showCheckinReminder(thisWeek) {
+  const html = `
+    <div class="reminder-overlay" id="reminder-overlay">
+      <div class="reminder-box">
+        <div class="reminder-icon">📊</div>
+        <div class="reminder-title">Sonntags-Check-in</div>
+        <div class="reminder-text">
+          Zeit für deinen wöchentlichen Coach-Check! Schick deinem Coach die Strava-Zusammenfassung und bekomm deinen personalisierten Plan für nächste Woche.
+        </div>
+        <div class="reminder-steps">
+          <div class="reminder-step">
+            <div class="step-num">1</div>
+            <div>Strava öffnen → <b style="color:var(--text)">Wochenzusammenfassung</b> Screenshot machen</div>
+          </div>
+          <div class="reminder-step">
+            <div class="step-num">2</div>
+            <div>Apple Health → <b style="color:var(--text)">HRV-Wochenverlauf</b> Screenshot</div>
+          </div>
+          <div class="reminder-step">
+            <div class="step-num">3</div>
+            <div>Beides an <b style="color:var(--accent)">Claude.ai</b> schicken mit: <i style="color:var(--muted)">"Hier mein Wochen-Check-in"</i></div>
+          </div>
+          <div class="reminder-step">
+            <div class="step-num">4</div>
+            <div>Coach analysiert und gibt dir den <b style="color:var(--text)">Plan für nächste Woche</b></div>
+          </div>
+        </div>
+        <div class="reminder-btn-row">
+          <button class="reminder-btn secondary" onclick="dismissReminder('checkin', '${thisWeek}')">Erledigt später</button>
+          <button class="reminder-btn primary" onclick="dismissReminder('checkin', '${thisWeek}')">Verstanden ✓</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function dismissReminder(type, key) {
+  if (type === 'hrv') localStorage.setItem('hrv_done', key);
+  if (type === 'checkin') localStorage.setItem('checkin_done', key);
+  const overlay = document.getElementById('reminder-overlay');
+  if (overlay) overlay.remove();
+}
+
+function goToMonitoring(today) {
+  dismissReminder('hrv', today);
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('monitoring').classList.add('active');
+  document.querySelectorAll('.nav-btn')[3].classList.add('active');
+}
+</script>
+</body>
+</html>
