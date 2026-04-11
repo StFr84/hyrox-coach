@@ -6,7 +6,7 @@ const CLIENT_ID = 223478;
 const REDIRECT_URI = 'https://stfr84.github.io/hyrox-coach';
 
 const TYPE_MAP = {
-  Run: 'laufen', Trail Run: 'laufen',
+  Run: 'laufen', 'Trail Run': 'laufen',
   WeightTraining: 'kraft', Workout: 'kraft', CrossFit: 'kraft',
   Rowing: 'rowing',
   NordicSki: 'skierg',
