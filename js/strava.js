@@ -84,10 +84,10 @@ export async function syncActivities() {
 
     await saveSession({
       type,
-      duration_min: duration,
+      duration,
       rpe,
       notes: act.name || '',
-      pace_per_km: pace,
+      pace: pace,
       phase: 'base',
     });
 
