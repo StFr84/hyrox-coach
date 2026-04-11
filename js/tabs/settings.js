@@ -15,7 +15,10 @@ async function render() {
 
     <div class="settings-section">
       <div class="settings-label">Claude API-Key</div>
-      <input class="settings-input" id="api-key-input" type="password" placeholder="sk-ant-..." value="${apiKey}">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="settings-input" id="api-key-input" type="password" placeholder="sk-ant-..." value="${apiKey}" style="flex:1">
+        <button class="btn-secondary" id="btn-show-key" style="padding:8px 12px;flex-shrink:0">👁</button>
+      </div>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn-secondary" id="btn-save-key" style="flex:1">Speichern</button>
         <button class="btn-secondary" id="btn-test-key" style="flex:1">Testen</button>
@@ -83,6 +86,11 @@ async function render() {
       document.getElementById('db-dot')?.classList.add('offline');
       if (document.getElementById('db-status')) document.getElementById('db-status').textContent = 'Nicht verbunden';
     });
+
+  document.getElementById('btn-show-key')?.addEventListener('click', () => {
+    const input = document.getElementById('api-key-input');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  });
 
   document.getElementById('btn-save-key')?.addEventListener('click', () => {
     const key = document.getElementById('api-key-input').value.trim();
