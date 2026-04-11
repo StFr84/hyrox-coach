@@ -1,19 +1,28 @@
-const CACHE_NAME = 'hyrox-coach-v1';
-const ASSETS = [
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap'
+const CACHE_NAME = 'sub68-v2';
+const CORE_ASSETS = [
+  '/',
+  '/index.html',
+  '/css/main.css',
+  '/js/app.js',
+  '/js/db.js',
+  '/js/sync.js',
+  '/js/charts.js',
+  '/js/config.js',
+  '/js/data/athlete.js',
+  '/js/data/plan-data.js',
+  '/js/tabs/dashboard.js',
+  '/js/tabs/log.js',
+  '/js/tabs/plan.js',
+  '/js/tabs/analyse.js',
+  '/js/tabs/coach.js',
+  '/js/tabs/settings.js',
+  '/icon-192.png',
+  '/icon-512.png',
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(ASSETS).catch(err => {
-        console.log('Cache partial fail (fonts ok):', err);
-      });
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(CORE_ASSETS))
   );
   self.skipWaiting();
 });
@@ -28,21 +37,21 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // API calls (Claude/Anthropic) immer online
-  if (e.request.url.includes('anthropic.com')) {
+  if (e.request.url.includes('cdn.jsdelivr.net') || e.request.url.includes('fonts.googleapis')) {
+    e.respondWith(
+      fetch(e.request).then(r => {
+        const clone = r.clone();
+        caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+        return r;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+  if (e.request.url.includes('supabase.co') || e.request.url.includes('anthropic.com')) {
+    e.respondWith(fetch(e.request));
     return;
   }
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
-          return response;
-        }
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
