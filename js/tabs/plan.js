@@ -4,8 +4,8 @@ import { STATIONS } from '../data/athlete.js';
 const el = () => document.getElementById('tab-plan');
 let activePhaseId = getCurrentPhase().id;
 
-export async function init() { render(); }
-export async function refresh() { render(); }
+export async function init() { activePhaseId = getCurrentPhase().id; render(); }
+export async function refresh() { activePhaseId = getCurrentPhase().id; render(); }
 
 function render() {
   const phase = PHASES.find(p => p.id === activePhaseId) || PHASES[1];
@@ -16,7 +16,8 @@ function render() {
     <div class="phase-pills">
       ${PHASES.map(p => `
         <div class="phase-pill ${p.id === activePhaseId ? 'active' : ''}" data-phase="${p.id}">
-          ${p.name} <span style="opacity:0.6;font-size:0.85em">${p.weeks}</span>
+          <div style="font-weight:700">${p.name}</div>
+          <div style="font-size:0.72em;opacity:0.7;margin-top:1px">${p.period}</div>
         </div>
       `).join('')}
     </div>
