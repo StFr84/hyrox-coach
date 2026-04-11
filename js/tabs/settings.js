@@ -1,5 +1,6 @@
-import Anthropic from 'https://esm.sh/@anthropic-ai/sdk';
 import { db } from '../db.js';
+
+const PROXY = 'https://dxikdpatrtsnbkeijtiy.supabase.co/functions/v1/bright-processor';
 import { ATHLETE, ZONES } from '../data/athlete.js';
 import { SUPABASE_URL } from '../config.js';
 
@@ -109,17 +110,26 @@ async function render() {
     const s = document.getElementById('key-status');
     s.textContent = 'Teste…';
     try {
-      const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
-      await client.messages.create({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 10,
-        messages: [{ role: 'user', content: 'Hi' }],
+      const res = await fetch(PROXY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 10,
+          messages: [{ role: 'user', content: 'Hi' }],
+        }),
       });
-      s.textContent = '✓ API-Key funktioniert!';
-      s.style.color = 'var(--success)';
-      localStorage.setItem('claude_api_key', key);
+      if (res.ok) {
+        s.textContent = '✓ API-Key funktioniert!';
+        s.style.color = 'var(--success)';
+        localStorage.setItem('claude_api_key', key);
+      } else {
+        const err = await res.json();
+        s.textContent = '✗ ' + (err.error?.message || `Fehler ${res.status}`);
+        s.style.color = 'var(--danger)';
+      }
     } catch (e) {
-      s.textContent = '✗ ' + (e.message || 'Ungültiger Key');
+      s.textContent = '✗ ' + (e.message || 'Verbindungsfehler');
       s.style.color = 'var(--danger)';
     }
   });
