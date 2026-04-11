@@ -1,7 +1,7 @@
 import { SUPABASE_URL } from './config.js';
 import { saveSession } from './db.js';
 
-const STRAVA_PROXY = `${SUPABASE_URL}/functions/v1/strava`;
+const STRAVA_PROXY = `${SUPABASE_URL}/functions/v1/Strava`;
 const CLIENT_ID = 223478;
 const REDIRECT_URI = 'https://stfr84.github.io/hyrox-coach';
 
