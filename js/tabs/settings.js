@@ -109,7 +109,7 @@ async function render() {
           'anthropic-dangerous-direct-browser-calls': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-6',
+          model: 'claude-haiku-4-5-20251001',
           max_tokens: 10,
           messages: [{ role: 'user', content: 'Hi' }],
         }),
@@ -120,11 +120,11 @@ async function render() {
         localStorage.setItem('claude_api_key', key);
       } else {
         const err = await r.json();
-        s.textContent = '✗ ' + (err.error?.message || 'Ungültiger Key');
+        s.textContent = '✗ ' + (err.error?.message || `HTTP ${r.status}`);
         s.style.color = 'var(--danger)';
       }
-    } catch {
-      s.textContent = '✗ Verbindungsfehler';
+    } catch (e) {
+      s.textContent = '✗ ' + (e.message || 'Verbindungsfehler');
       s.style.color = 'var(--danger)';
     }
   });
