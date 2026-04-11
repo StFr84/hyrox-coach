@@ -1,3 +1,4 @@
+import Anthropic from 'https://esm.sh/@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '../data/athlete.js';
 import { getTodayHRV, getWeekSessions, getHRVEntries, ampelLabel } from '../db.js';
 import { getCurrentPhase, getTodaySession } from '../data/plan-data.js';
@@ -116,26 +117,13 @@ async function sendMessage() {
 
   try {
     const systemPrompt = await buildSystemPrompt();
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-calls': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 600,
-        system: systemPrompt,
-        messages: messages.slice(-10),
-      }),
+    const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+    const data = await client.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 600,
+      system: systemPrompt,
+      messages: messages.slice(-10),
     });
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || 'API-Fehler');
-    }
-    const data = await response.json();
     messages.push({ role: 'assistant', content: data.content[0].text });
     saveHistory();
     render();
