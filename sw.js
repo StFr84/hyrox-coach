@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sub68-v9';
+const CACHE_NAME = 'sub68-v10';
 const CORE_ASSETS = [
   '/',
   '/index.html',

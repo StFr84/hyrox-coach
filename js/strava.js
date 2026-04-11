@@ -39,14 +39,7 @@ export function clearStravaTokens() {
 }
 
 export function stravaAuthUrl() {
-  const params = new URLSearchParams({
-    client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'code',
-    approval_prompt: 'auto',
-    scope: 'activity:read_all',
-  });
-  return `https://www.strava.com/oauth/authorize?${params}`;
+  return `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&approval_prompt=auto&scope=activity:read_all`;
 }
 
 export async function exchangeCode(code) {
