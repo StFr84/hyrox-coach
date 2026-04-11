@@ -1,5 +1,4 @@
 import { syncQueue } from './sync.js';
-import { exchangeCode } from './strava.js';
 
 const TAB_MODULES = {
   dashboard: () => import('./tabs/dashboard.js'),
@@ -46,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (stravaCode && params.get('scope')?.includes('activity')) {
     history.replaceState({}, '', window.location.pathname);
     try {
+      const { exchangeCode } = await import('./strava.js');
       await exchangeCode(stravaCode);
       await switchTab('settings');
       return;
