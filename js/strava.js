@@ -78,7 +78,7 @@ export async function syncActivities() {
   for (const act of data.activities) {
     if (imported.includes(act.id)) continue;
     const type = toType(act.sport_type || act.type);
-    const duration = Math.round(act.moving_time / 60);
+    const duration = Math.max(1, Math.round((act.moving_time || act.elapsed_time || 60) / 60));
     const rpe = act.perceived_exertion || 6;
     const pace = type === 'laufen' ? toPace(act.average_speed) : '';
 
