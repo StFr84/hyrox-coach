@@ -4,7 +4,8 @@ import { getCurrentPhase, TYPE_ICONS } from '../data/plan-data.js';
 
 const el = () => document.getElementById('tab-log');
 
-let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null };
+let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '', notes: '', date: new Date().toISOString().split('T')[0] };
+let _sessions = [], _weekMean = null;
 
 export async function init() {
   const [todayHRV, sessions, hrvEntries] = await Promise.all([
@@ -20,6 +21,8 @@ export async function init() {
 export async function refresh() { await init(); }
 
 function render(sessions, weekMean) {
+  _sessions = sessions ?? _sessions;
+  _weekMean = weekMean ?? _weekMean;
   const phase = getCurrentPhase();
   const types = [
     { id: 'laufen',   label: 'Laufen',  icon: '🏃' },
@@ -64,6 +67,16 @@ function render(sessions, weekMean) {
       <div class="dur-value" id="dur-display">${state.duration} <span class="dur-unit">Min</span></div>
       <button class="dur-btn" id="dur-plus">+</button>
     </div>
+
+    ${state.type === 'laufen' ? `
+    <div class="section-label">Pace (min/km) — optional</div>
+    <div class="pace-input-row">
+      <input class="settings-input pace-input" id="pace-input" type="text"
+        inputmode="decimal" placeholder="5:30" value="${state.pace}"
+        style="font-family:'Barlow Condensed',sans-serif;font-size:1.4em;font-weight:700;color:var(--accent2)">
+      <span style="color:var(--muted);font-size:0.82em;white-space:nowrap">min/km</span>
+    </div>
+    ` : ''}
 
     <div class="section-label">Anstrengung (RPE 1–10)</div>
     <div class="rpe-grid">
@@ -131,9 +144,11 @@ function attachListeners(phase, weekMean) {
   document.querySelectorAll('.type-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       state.type = pill.dataset.type;
+      if (state.type !== 'laufen') state.pace = '';
       document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
       pill.classList.add('active');
       updateLoadPreview();
+      render(_sessions, _weekMean);
     });
   });
 
@@ -157,15 +172,30 @@ function attachListeners(phase, weekMean) {
     });
   });
 
+  const paceInput = document.getElementById('pace-input');
+  if (paceInput) {
+    paceInput.addEventListener('input', () => { state.pace = paceInput.value.trim(); });
+  }
+
   document.getElementById('btn-save-session')?.addEventListener('click', async () => {
     if (!state.rpe) { alert('Bitte RPE auswählen (1–10)'); return; }
-    const session = { type: state.type, duration: state.duration, rpe: state.rpe, phase: phase.id };
+    const session = {
+      type: state.type,
+      duration: state.duration,
+      rpe: state.rpe,
+      phase: phase.id,
+      pace: state.pace || '',
+      notes: state.notes || '',
+    };
     try {
       await saveSession(session);
     } catch {
       queueSession(session);
     }
     state.rpe = null;
+    state.pace = '';
+    state.notes = '';
+    state.date = new Date().toISOString().split('T')[0];
     await init();
     document.querySelector('[data-tab="dashboard"]').click();
   });
