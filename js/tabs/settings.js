@@ -1,8 +1,9 @@
 import { db } from '../db.js';
-
-const PROXY = 'https://dxikdpatrtsnbkeijtiy.supabase.co/functions/v1/bright-processor';
 import { ATHLETE, ZONES } from '../data/athlete.js';
 import { SUPABASE_URL } from '../config.js';
+import { getStravaTokens, clearStravaTokens, stravaAuthUrl, syncActivities } from '../strava.js';
+
+const PROXY = 'https://dxikdpatrtsnbkeijtiy.supabase.co/functions/v1/bright-processor';
 
 const el = () => document.getElementById('tab-settings');
 
@@ -40,6 +41,26 @@ async function render() {
         <span id="db-status">Prüfe…</span>
         <div style="color:var(--muted);font-size:0.8em;margin-top:4px">${SUPABASE_URL}</div>
       </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Strava</div>
+      ${getStravaTokens() ? `
+        <div class="card-sm" style="font-size:0.85em;margin-bottom:8px">
+          <span style="color:var(--success)">● Verbunden</span>
+          <span style="color:var(--muted);margin-left:8px">${getStravaTokens()?.athlete?.firstname || ''} ${getStravaTokens()?.athlete?.lastname || ''}</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" id="btn-strava-sync" style="flex:1">🔄 Aktivitäten synchronisieren</button>
+          <button class="btn-secondary" id="btn-strava-disconnect" style="flex:1;color:var(--danger)">Trennen</button>
+        </div>
+        <div id="strava-status" style="font-size:0.78em;color:var(--muted);margin-top:6px"></div>
+      ` : `
+        <div style="font-size:0.82em;color:var(--muted);margin-bottom:10px">Verbinde Strava um Aktivitäten automatisch zu importieren.</div>
+        <button class="btn-secondary" id="btn-strava-connect" style="width:100%;background:rgba(252,76,2,0.15);border-color:#fc4c02;color:#fc4c02">
+          🏃 Mit Strava verbinden
+        </button>
+      `}
     </div>
 
     <div class="settings-section">
@@ -88,6 +109,29 @@ async function render() {
       document.getElementById('db-dot')?.classList.add('offline');
       if (document.getElementById('db-status')) document.getElementById('db-status').textContent = 'Nicht verbunden';
     });
+
+  document.getElementById('btn-strava-connect')?.addEventListener('click', () => {
+    window.location.href = stravaAuthUrl();
+  });
+
+  document.getElementById('btn-strava-disconnect')?.addEventListener('click', () => {
+    clearStravaTokens();
+    localStorage.removeItem('strava_imported');
+    render();
+  });
+
+  document.getElementById('btn-strava-sync')?.addEventListener('click', async () => {
+    const s = document.getElementById('strava-status');
+    s.textContent = 'Synchronisiere…';
+    try {
+      const count = await syncActivities();
+      s.textContent = count > 0 ? `✓ ${count} neue Aktivitäten importiert` : '✓ Alles aktuell';
+      s.style.color = 'var(--success)';
+    } catch (e) {
+      s.textContent = '✗ ' + e.message;
+      s.style.color = 'var(--danger)';
+    }
+  });
 
   document.getElementById('btn-show-key')?.addEventListener('click', () => {
     const input = document.getElementById('api-key-input');

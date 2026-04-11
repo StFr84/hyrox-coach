@@ -1,4 +1,5 @@
 import { syncQueue } from './sync.js';
+import { exchangeCode } from './strava.js';
 
 const TAB_MODULES = {
   dashboard: () => import('./tabs/dashboard.js'),
@@ -38,6 +39,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   syncQueue();
   window.addEventListener('online', syncQueue);
+
+  // Handle Strava OAuth callback
+  const params = new URLSearchParams(window.location.search);
+  const stravaCode = params.get('code');
+  if (stravaCode && params.get('scope')?.includes('activity')) {
+    history.replaceState({}, '', window.location.pathname);
+    try {
+      await exchangeCode(stravaCode);
+      await switchTab('settings');
+      return;
+    } catch (e) {
+      console.error('Strava auth failed:', e);
+    }
+  }
 
   await switchTab('dashboard');
 });
