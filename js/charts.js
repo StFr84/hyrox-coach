@@ -217,3 +217,36 @@ export function renderRunProgressChart(canvasId, sessions) {
     },
   });
 }
+
+export function renderStrengthMiniChart(canvasId, dataPoints) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: dataPoints.map(d =>
+        new Date(d.date).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })
+      ),
+      datasets: [{
+        data: dataPoints.map(d => d.avgKg),
+        borderColor: '#e8ff47',
+        backgroundColor: 'rgba(232,255,71,0.06)',
+        borderWidth: 2,
+        pointRadius: 3,
+        tension: 0.3,
+        fill: true,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e2230' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
+        y: { grid: { color: '#1e2230' }, beginAtZero: false, ticks: { font: { size: 9 }, maxTicksLimit: 3 } },
+      },
+    },
+  });
+}
