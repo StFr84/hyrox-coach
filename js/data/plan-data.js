@@ -27,6 +27,14 @@ export const PHASES = [
   {
     id: 'base', name: 'Base', weeks: 'W3–10', period: 'Apr–Jun 2026',
     sessionsPerWeek: 6, rpeMin: 1000, rpeMax: 1500,
+    changes: [
+      { icon: '↑', text: 'Volumen: 4 → 6 Einheiten/Woche' },
+      { icon: '🎯', text: 'RPE-Ziel: 1000–1500 Pkt/Woche' },
+      { icon: '🏋️', text: 'Krafttraining A & B: Squat, RDL, Split Squat' },
+      { icon: '🏃', text: 'Langer LDL Mo + Sa — strikt unter 137 bpm' },
+      { icon: '🎿', text: 'SkiErg + Rowing Mi dazugekommen' },
+      { icon: '🏆', text: 'Stationstraining Fr (Hyrox-Schwächen)' },
+    ],
     weekPlan: [
       { day: 'Mo', type: 'ausdauer',   name: 'LDL Langer Dauerlauf',  dur: 60, zone: 'LDL', hrMax: 137, details: 'Strikt unter 137 bpm. Wenn Puls steigt → gehen.',
         exercises: [{ name: 'Langer Dauerlauf', sets: 1, reps: 1, distance: '60 Min', unit: 'pace' }] },
@@ -62,6 +70,14 @@ export const PHASES = [
   {
     id: 'build', name: 'Build', weeks: 'W11–22', period: 'Jun–Sep 2026',
     sessionsPerWeek: 6, rpeMin: 1500, rpeMax: 2200,
+    changes: [
+      { icon: '↑', text: 'RPE-Ziel steigt: 1500–2200 Pkt/Woche' },
+      { icon: '🏃', text: 'Schwellen-Intervalle Mo: 6×1km bei IAS' },
+      { icon: '🏋️', text: 'Maximalkraft Di: Deadlift 5×3, Klimmzüge' },
+      { icon: '🏆', text: 'Rennsimulation Do: Segmente mit Zeitmessung' },
+      { icon: '🏋️', text: 'Krafttraining C Fr: Squat 5×5, Farmer Carry' },
+      { icon: '🏆', text: 'Halbe Rennsimulation Sa: 4×1km + 4 Stationen' },
+    ],
     weekPlan: [
       { day: 'Mo', type: 'ausdauer',   name: 'TDL Schwellen-Intervalle', dur: 70, zone: 'TDL', hrMax: 161, details: '6×1 km bei 159–161 bpm, je 3 Min Pause. Ziel: IAS verschieben.',
         exercises: [{ name: 'Schwellen-Intervall', sets: 6, reps: 1, distance: '1 km', unit: 'pace' }] },
@@ -99,6 +115,14 @@ export const PHASES = [
   {
     id: 'peak', name: 'Peak', weeks: 'W23–32', period: 'Sep–Nov 2026',
     sessionsPerWeek: 6, rpeMin: 2000, rpeMax: 2800,
+    changes: [
+      { icon: '↑', text: 'RPE-Ziel: 2000–2800 Pkt/Woche — Hochphase' },
+      { icon: '🏃', text: 'Wettkampfpace Mo: 8×1km bei 161–165 bpm' },
+      { icon: '🏋️', text: 'Kraft-Power Di: Power Clean, Jump Squat' },
+      { icon: '🏆', text: 'Vollrennsimulation Do: alle 8 Stationen + 8×1km' },
+      { icon: '🏋️', text: 'Technik unter Ermüdung Fr' },
+      { icon: '♻️', text: 'Mi wird zu aktiver Erholung (weniger Belastung)' },
+    ],
     weekPlan: [
       { day: 'Mo', type: 'ausdauer', name: 'ETL Wettkampfpace',      dur: 60, zone: 'ETL', hrMax: 165, details: '8×1 km bei 161–165 bpm. Wettkampfgeschwindigkeit halten.',
         exercises: [{ name: 'Wettkampf-Intervall', sets: 8, reps: 1, distance: '1 km', unit: 'pace' }] },
@@ -126,6 +150,13 @@ export const PHASES = [
   {
     id: 'taper', name: 'Taper', weeks: 'W33–38', period: 'Nov–Dez 2026',
     sessionsPerWeek: 4, rpeMin: null, rpeMax: 1200,
+    changes: [
+      { icon: '↓', text: 'Volumen: 6 → 4 Einheiten/Woche — Taper!' },
+      { icon: '↓', text: 'RPE-Ziel: max 1200 Pkt/Woche' },
+      { icon: '🏋️', text: 'Kraft nur noch 3×3 @ 75% — frisch bleiben' },
+      { icon: '🏆', text: 'Keine Vollrennsimulation mehr, nur Aktivierung' },
+      { icon: '🎯', text: 'Fokus: mental vorbereiten, Beine schonen' },
+    ],
     weekPlan: [
       { day: 'Mo', type: 'ausdauer', name: 'Kurzer LDL',         dur: 40, zone: 'LDL', hrMax: 137,  details: 'Sehr locker, unter 137 bpm.',
         exercises: [{ name: 'Kurzer LDL', sets: 1, reps: 1, distance: '40 Min', unit: 'pace' }] },
