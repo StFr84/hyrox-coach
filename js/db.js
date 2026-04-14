@@ -86,3 +86,37 @@ export function getAmpelFromRMSSD(rmssd, weekMean = null) {
 export function ampelLabel(ampel) {
   return { gruen: 'GRÜN — Volles Training', gelb: 'GELB — Intensität –20%', rot: 'ROT — Nur Erholung' }[ampel] || '–';
 }
+
+// ── Workout Log (localStorage) ───────────────────────────────────────────────
+const WL_KEY  = 'sub68_workout_logs';
+const WIP_KEY = 'sub68_workout_wip';
+
+export function saveWorkoutLog(log) {
+  const logs = JSON.parse(localStorage.getItem(WL_KEY) || '[]');
+  const idx = logs.findIndex(l => l.date === log.date && l.session_type === log.session_type);
+  if (idx >= 0) logs[idx] = log;
+  else logs.unshift(log);
+  localStorage.setItem(WL_KEY, JSON.stringify(logs.slice(0, 100)));
+}
+
+export function getWorkoutLogByDate(date) {
+  const logs = JSON.parse(localStorage.getItem(WL_KEY) || '[]');
+  return logs.filter(l => l.date === date);
+}
+
+export function getLastWorkoutLog(type) {
+  const logs = JSON.parse(localStorage.getItem(WL_KEY) || '[]');
+  return logs.find(l => l.session_type === type) || null;
+}
+
+export function saveWorkoutWip(wip) {
+  localStorage.setItem(WIP_KEY, JSON.stringify(wip));
+}
+
+export function getWorkoutWip() {
+  return JSON.parse(localStorage.getItem(WIP_KEY) || 'null');
+}
+
+export function clearWorkoutWip() {
+  localStorage.removeItem(WIP_KEY);
+}
