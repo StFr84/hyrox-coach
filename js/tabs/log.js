@@ -1,5 +1,5 @@
 import { saveSession, saveHRV, getTodayHRV, getRecentSessions, getAmpelFromRMSSD, getHRVEntries, ampelLabel,
-         saveWorkoutWip, getWorkoutWip, clearWorkoutWip, getLastWorkoutLog } from '../db.js'; // saveWorkoutWip used in attachSetListeners (Task 7)
+         saveWorkoutLog, saveWorkoutWip, getWorkoutWip, clearWorkoutWip, getLastWorkoutLog } from '../db.js';
 import { queueSession } from '../sync.js';
 import { getCurrentPhase, TYPE_ICONS } from '../data/plan-data.js';
 
@@ -11,7 +11,8 @@ let workoutState = null; // { session_type, date, exercises: [{name, unit, dista
 
 function buildWorkoutState(type, lastLog, existingWip) {
   const phase = getCurrentPhase();
-  const planDay = phase.weekPlan.find(d => d.type === type && d.exercises?.length);
+  const planType = { laufen: 'ausdauer', skierg: 'skierg', rowing: 'rowing' }[type] || type;
+  const planDay = phase.weekPlan.find(d => d.type === planType && d.exercises?.length);
   if (!planDay) return null;
 
   const today = new Date().toISOString().split('T')[0];
@@ -117,6 +118,10 @@ export async function init() {
     : null;
 
   const wip = getWorkoutWip();
+  const today = new Date().toISOString().split('T')[0];
+  if (wip && wip.date === today && wip.session_type !== state.type) {
+    state.type = wip.session_type;
+  }
   const lastLog = getLastWorkoutLog(state.type);
   workoutState = buildWorkoutState(state.type, lastLog, wip);
 
@@ -295,6 +300,9 @@ function attachListeners(phase, weekMean) {
     state.pace = '';
     state.notes = '';
     state.date = new Date().toISOString().split('T')[0];
+    if (workoutState) {
+      saveWorkoutLog({ ...workoutState, phase_id: phase.id, created_at: Date.now() });
+    }
     workoutState = null;
     clearWorkoutWip();
     await init();
