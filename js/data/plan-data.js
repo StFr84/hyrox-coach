@@ -45,13 +45,13 @@ export const PHASES = [
         exercises: [
           { name: 'Bench Press', sets: 3, reps: 10, unit: 'kg' },
           { name: 'Pull-Ups',    sets: 3, reps: 8,  unit: 'reps' },
-          { name: 'Core',        sets: 3, reps: 1,  distance: '1 Min', unit: 'reps' },
+          { name: 'Core',        sets: 3, reps: 1,  distance: '1 Min', unit: 'min:sec' },
           { name: 'MDL Lauf',    sets: 1, reps: 1,  distance: '45 Min', unit: 'pace' },
         ] },
       { day: 'Fr', type: 'hyrox',      name: 'Stationstraining',      dur: 75, zone: null,  hrMax: null, details: 'Burpees 5×10 ⚡ | Sandbag Lunges 4×20m ⚡ | SkiErg 4×500m. Schwächen immer trainieren!',
         exercises: [
           { name: 'Burpees',        sets: 5, reps: 10, unit: 'reps' },
-          { name: 'Sandbag Lunges', sets: 4, reps: 1,  distance: '20m', unit: 'reps' },
+          { name: 'Sandbag Lunges', sets: 4, reps: 1,  distance: '20m', unit: 'min:sec' },
           { name: 'SkiErg',         sets: 4, reps: 1,  distance: '500m', unit: 'min:sec' },
         ] },
       { day: 'Sa', type: 'ausdauer',   name: 'Langer LDL',            dur: 90, zone: 'LDL', hrMax: 137,  details: 'Strikt unter 137 bpm. Dauer wichtiger als Tempo.',
@@ -115,8 +115,8 @@ export const PHASES = [
         ] },
       { day: 'Fr', type: 'kraft',    name: 'Technik unter Ermüdung', dur: 45, zone: null,  hrMax: null, details: 'Burpee Broad Jump Technik 3×20m | Sandbag Lunges Technik 3×25m. Unter Ermüdung!',
         exercises: [
-          { name: 'Burpee Broad Jump',      sets: 3, reps: 1, distance: '20m', unit: 'reps' },
-          { name: 'Sandbag Lunges Technik', sets: 3, reps: 1, distance: '25m', unit: 'reps' },
+          { name: 'Burpee Broad Jump',      sets: 3, reps: 1, distance: '20m', unit: 'min:sec' },
+          { name: 'Sandbag Lunges Technik', sets: 3, reps: 1, distance: '25m', unit: 'min:sec' },
         ] },
       { day: 'Sa', type: 'ausdauer', name: 'MDL Regeneration',       dur: 50, zone: 'MDL', hrMax: 158,  details: '138–158 bpm. Aktive Erholung nach Do-Simulation.',
         exercises: [{ name: 'MDL Lauf', sets: 1, reps: 1, distance: '50 Min', unit: 'pace' }] },
@@ -144,7 +144,7 @@ export const PHASES = [
       { day: 'Sa', type: 'ausdauer', name: 'Aktivierungslauf',   dur: 30, zone: 'MDL', hrMax: 158,  details: '138–158 bpm + 4×80m Strides locker. Beine fühlen lassen.',
         exercises: [
           { name: 'Aktivierungslauf', sets: 1, reps: 1, distance: '30 Min', unit: 'pace' },
-          { name: 'Strides',          sets: 4, reps: 1, distance: '80m', unit: 'reps' },
+          { name: 'Strides',          sets: 4, reps: 1, distance: '80m', unit: 'min:sec' },
         ] },
       { day: 'So', type: 'ruhe',     name: 'WETTKAMPF / Ruhe',   dur: 0,  zone: null,  hrMax: null, details: 'Race Day oder letzte Ruhe davor. Gut schlafen!' },
     ],
