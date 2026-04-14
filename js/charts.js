@@ -129,3 +129,90 @@ export function renderPaceChart(canvasId, sessions) {
     },
   });
 }
+
+export function renderRunProgressChart(canvasId, sessions) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const existing = Chart.getChart(canvas);
+  if (existing) existing.destroy();
+
+  const toDecimal = pace => {
+    const [m, s] = pace.split(':').map(Number);
+    return m + (s || 0) / 60;
+  };
+  const parseHR = notes => {
+    const m = notes?.match(/Ø HF: (\d+)/);
+    return m ? parseInt(m[1]) : null;
+  };
+
+  const running = sessions
+    .filter(s => s.type === 'laufen' && s.pace_per_km)
+    .slice(-10);
+  if (running.length < 2) return;
+
+  const labels = running.map(s =>
+    new Date(s.created_at).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })
+  );
+  const paceData = running.map(s => toDecimal(s.pace_per_km));
+  const hrData = running.map(s => parseHR(s.notes));
+  const hasHR = hrData.some(v => v !== null);
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Pace (min/km)',
+          data: paceData,
+          borderColor: '#e8ff47',
+          backgroundColor: 'rgba(232,255,71,0.06)',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.3,
+          fill: true,
+          yAxisID: 'yPace',
+        },
+        ...(hasHR ? [{
+          label: 'Ø HF (bpm)',
+          data: hrData,
+          borderColor: '#47c8ff',
+          backgroundColor: 'rgba(71,200,255,0.06)',
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.3,
+          spanGaps: true,
+          yAxisID: 'yHR',
+        }] : []),
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: hasHR,
+          position: 'top',
+          labels: { padding: 8, font: { size: 10 }, color: '#7a8099' },
+        },
+      },
+      scales: {
+        x: { grid: { color: '#1e2230' } },
+        yPace: {
+          type: 'linear', position: 'left',
+          reverse: true,
+          grid: { color: '#1e2230' },
+          ticks: {
+            color: '#e8ff47',
+            callback: v => `${Math.floor(v)}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}`,
+          },
+        },
+        yHR: {
+          type: 'linear', position: 'right',
+          display: hasHR,
+          grid: { display: false },
+          ticks: { color: '#47c8ff' },
+        },
+      },
+    },
+  });
+}
