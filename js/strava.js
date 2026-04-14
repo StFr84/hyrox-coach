@@ -81,13 +81,15 @@ export async function syncActivities() {
     const duration = Math.max(1, Math.round((act.moving_time || act.elapsed_time || 60) / 60));
     const rpe = act.perceived_exertion || 6;
     const pace = type === 'laufen' ? toPace(act.average_speed) : '';
+    const avgHR = act.average_heartrate ? Math.round(act.average_heartrate) : null;
+    const notes = avgHR ? `Ø HF: ${avgHR} bpm` : (act.name || '');
 
     await saveSession({
       type,
       duration,
       rpe,
-      notes: act.name || '',
-      pace: pace,
+      notes,
+      pace,
       phase: 'base',
     });
 
