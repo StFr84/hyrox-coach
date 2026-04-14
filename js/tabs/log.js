@@ -305,7 +305,47 @@ function attachListeners(phase, weekMean) {
 }
 
 function attachSetListeners() {
-  // Placeholder — set interaction implemented in Task 7
+  if (!workoutState) return;
+
+  // Value input changes — update in-memory state
+  el().querySelectorAll('.set-value-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const exIdx = parseInt(input.dataset.ex);
+      const setIdx = parseInt(input.dataset.set);
+      workoutState.exercises[exIdx].sets[setIdx].value = input.value;
+    });
+  });
+
+  // Tap set chip to complete it
+  el().querySelectorAll('.set-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const exIdx = parseInt(chip.dataset.ex);
+      const setIdx = parseInt(chip.dataset.set);
+      const ex = workoutState.exercises[exIdx];
+      const set = ex.sets[setIdx];
+
+      // Only allow completing the active set (first uncompleted set)
+      const isActive = !set.completed && ex.sets.slice(0, setIdx).every(s => s.completed);
+      if (!isActive) return;
+
+      // Read value from input if present
+      const input = chip.querySelector('.set-value-input');
+      if (input) set.value = input.value.trim() || null;
+
+      set.completed = true;
+      saveWorkoutWip(workoutState);  // auto-save after each set completion
+      render(_sessions, _weekMean);
+    });
+  });
+
+  // Allow completing a set by pressing Enter in the input
+  el().querySelectorAll('.set-value-input').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        input.closest('.set-chip')?.click();
+      }
+    });
+  });
 }
 
 function updateLoadPreview() {
