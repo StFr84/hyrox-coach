@@ -1,4 +1,5 @@
-import { saveSession, saveHRV, getTodayHRV, getRecentSessions, getAmpelFromRMSSD, getHRVEntries, ampelLabel } from '../db.js';
+import { saveSession, saveHRV, getTodayHRV, getRecentSessions, getAmpelFromRMSSD, getHRVEntries, ampelLabel,
+         saveWorkoutWip, getWorkoutWip, clearWorkoutWip, getLastWorkoutLog } from '../db.js';
 import { queueSession } from '../sync.js';
 import { getCurrentPhase, TYPE_ICONS } from '../data/plan-data.js';
 
@@ -6,6 +7,105 @@ const el = () => document.getElementById('tab-log');
 
 let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '', notes: '', date: new Date().toISOString().split('T')[0] };
 let _sessions = [], _weekMean = null;
+let workoutState = null; // { session_type, date, exercises: [{name, unit, distance, planned_sets, planned_reps, lastValue, sets:[{set_number,value,completed}]}] }
+
+function buildWorkoutState(type, lastLog, existingWip) {
+  const phase = getCurrentPhase();
+  const planDay = phase.weekPlan.find(d => d.type === type && d.exercises?.length);
+  if (!planDay) return null;
+
+  const today = new Date().toISOString().split('T')[0];
+  if (existingWip && existingWip.session_type === type && existingWip.date === today) {
+    return existingWip;
+  }
+
+  return {
+    session_type: type,
+    date: today,
+    exercises: planDay.exercises.map(ex => {
+      const lastEx = lastLog?.exercises?.find(e => e.name === ex.name);
+      const lastCompletedSet = lastEx?.sets?.filter(s => s.completed).slice(-1)[0];
+      return {
+        name: ex.name,
+        unit: ex.unit,
+        distance: ex.distance || null,
+        planned_sets: ex.sets,
+        planned_reps: ex.reps,
+        lastValue: lastCompletedSet?.value ?? null,
+        sets: Array.from({ length: ex.sets }, (_, i) => ({
+          set_number: i + 1,
+          value: null,
+          completed: false,
+        })),
+      };
+    }),
+  };
+}
+
+function renderSetChips(exercise, exIdx) {
+  return exercise.sets.map((set, sIdx) => {
+    const isActive = !set.completed && exercise.sets.slice(0, sIdx).every(s => s.completed);
+    const isDone = set.completed;
+    const chipClass = isDone ? 'done' : isActive ? 'active' : '';
+    const inputType = exercise.unit === 'pace' || exercise.unit === 'min:sec' ? 'text' : 'number';
+    const inputMode = exercise.unit === 'reps' ? 'numeric' : 'decimal';
+    const valueDisplay = isDone
+      ? `<div class="set-chip-value">${set.value !== null ? set.value + (exercise.unit !== 'reps' ? ' ' + exercise.unit : '') : '✓'}</div>`
+      : isActive
+        ? `<input class="set-value-input" data-ex="${exIdx}" data-set="${sIdx}" type="${inputType}" inputmode="${inputMode}" placeholder="${exercise.unit === 'reps' ? '—' : exercise.unit}" step="0.5">`
+        : `<div class="set-chip-value" style="color:var(--bg3)">—</div>`;
+    const repsLabel = exercise.distance ? exercise.distance : `× ${exercise.planned_reps}`;
+
+    return `
+      <div class="set-chip ${chipClass}" data-ex="${exIdx}" data-set="${sIdx}">
+        <div class="set-chip-label">S${set.set_number}</div>
+        ${valueDisplay}
+        <div class="set-chip-reps">${repsLabel}</div>
+        <div class="set-chip-check">${isDone ? '✓' : '○'}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderExerciseBlock() {
+  if (!workoutState) return '';
+
+  const exercises = workoutState.exercises.map((ex, exIdx) => {
+    const completedCount = ex.sets.filter(s => s.completed).length;
+    const isCollapsed = completedCount === ex.sets.length;
+    const completedValues = ex.sets.filter(s => s.completed && s.value !== null).map(s => parseFloat(s.value)).filter(v => !isNaN(v));
+    const avgVal = completedValues.length
+      ? (completedValues.reduce((a, b) => a + b, 0) / completedValues.length).toFixed(1).replace('.0', '')
+      : null;
+
+    if (isCollapsed) {
+      const summary = avgVal ? `Ø ${avgVal} ${ex.unit} · ${completedCount}/${ex.sets.length} Sätze` : `${completedCount}/${ex.sets.length} Sätze ✓`;
+      return `
+        <div class="exercise-card collapsed" data-ex="${exIdx}">
+          <span class="exercise-name">${ex.name}</span>
+          <span class="exercise-summary">${summary}</span>
+        </div>`;
+    }
+
+    const prevHint = ex.lastValue !== null
+      ? `<div class="exercise-prev">Letztes Mal: ${ex.lastValue} ${ex.unit}</div>`
+      : '';
+    const planLabel = ex.distance ? `${ex.planned_sets} × ${ex.distance}` : `${ex.planned_sets} Sätze × ${ex.planned_reps} Wdh`;
+
+    return `
+      <div class="exercise-card" data-ex="${exIdx}">
+        <div class="exercise-header">
+          <span class="exercise-name">${ex.name}</span>
+          <span class="exercise-plan">${planLabel}</span>
+        </div>
+        ${prevHint}
+        <div class="set-chips">${renderSetChips(ex, exIdx)}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="section-label">Übungen</div>
+    <div class="exercise-block">${exercises}</div>`;
+}
 
 export async function init() {
   const [todayHRV, sessions, hrvEntries] = await Promise.all([
@@ -15,6 +115,11 @@ export async function init() {
   const weekMean = hrvEntries.length
     ? Math.round(hrvEntries.reduce((s, e) => s + e.rmssd, 0) / hrvEntries.length)
     : null;
+
+  const wip = getWorkoutWip();
+  const lastLog = getLastWorkoutLog(state.type);
+  workoutState = buildWorkoutState(state.type, lastLog, wip);
+
   render(sessions, weekMean);
 }
 
@@ -61,14 +166,9 @@ function render(sessions, weekMean) {
       `).join('')}
     </div>
 
-    <div class="section-label">Dauer</div>
-    <div class="duration-row">
-      <button class="dur-btn" id="dur-minus">−</button>
-      <div class="dur-value" id="dur-display">${state.duration} <span class="dur-unit">Min</span></div>
-      <button class="dur-btn" id="dur-plus">+</button>
-    </div>
+    ${renderExerciseBlock()}
 
-    ${state.type === 'laufen' ? `
+    ${state.type === 'laufen' && !workoutState ? `
     <div class="section-label">Pace (min/km) — optional</div>
     <div class="pace-input-row">
       <input class="settings-input pace-input" id="pace-input" type="text"
@@ -77,6 +177,13 @@ function render(sessions, weekMean) {
       <span style="color:var(--muted);font-size:0.82em;white-space:nowrap">min/km</span>
     </div>
     ` : ''}
+
+    <div class="section-label">Dauer</div>
+    <div class="duration-row">
+      <button class="dur-btn" id="dur-minus">−</button>
+      <div class="dur-value" id="dur-display">${state.duration} <span class="dur-unit">Min</span></div>
+      <button class="dur-btn" id="dur-plus">+</button>
+    </div>
 
     <div class="section-label">Anstrengung (RPE 1–10)</div>
     <div class="rpe-grid">
@@ -98,9 +205,9 @@ function render(sessions, weekMean) {
 
     <div class="section-label" style="margin-top:24px">Letzte Einheiten</div>
     <div class="card" style="padding:0 14px">
-      ${sessions.length === 0
+      ${_sessions.length === 0
         ? '<div class="empty-state"><div class="empty-icon">📭</div>Noch keine Einheiten</div>'
-        : sessions.map(s => `
+        : _sessions.map(s => `
           <div class="session-item">
             <div>
               <div class="session-type">${TYPE_ICONS[s.type] || ''} ${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</div>
@@ -131,11 +238,7 @@ function attachListeners(phase, weekMean) {
     document.getElementById('btn-save-hrv')?.addEventListener('click', async () => {
       const v = parseInt(hrvInput.value);
       if (!v || v < 10 || v > 200) { alert('Bitte einen gültigen HRV-Wert eingeben (10–200 ms)'); return; }
-      try {
-        await saveHRV(v);
-      } catch {
-        // queue not applicable for HRV — just try again
-      }
+      try { await saveHRV(v); } catch { /* retry not needed for HRV */ }
       state.todayHRV = await getTodayHRV();
       await refresh();
     });
@@ -145,9 +248,9 @@ function attachListeners(phase, weekMean) {
     pill.addEventListener('click', () => {
       state.type = pill.dataset.type;
       if (state.type !== 'laufen') state.pace = '';
-      document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      updateLoadPreview();
+      const lastLog = getLastWorkoutLog(state.type);
+      const wip = getWorkoutWip();
+      workoutState = buildWorkoutState(state.type, lastLog, wip);
       render(_sessions, _weekMean);
     });
   });
@@ -187,18 +290,22 @@ function attachListeners(phase, weekMean) {
       pace: state.pace || '',
       notes: state.notes || '',
     };
-    try {
-      await saveSession(session);
-    } catch {
-      queueSession(session);
-    }
+    try { await saveSession(session); } catch { queueSession(session); }
     state.rpe = null;
     state.pace = '';
     state.notes = '';
     state.date = new Date().toISOString().split('T')[0];
+    workoutState = null;
+    clearWorkoutWip();
     await init();
     document.querySelector('[data-tab="dashboard"]').click();
   });
+
+  attachSetListeners();
+}
+
+function attachSetListeners() {
+  // Placeholder — set interaction implemented in Task 7
 }
 
 function updateLoadPreview() {
