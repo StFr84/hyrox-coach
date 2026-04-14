@@ -137,12 +137,13 @@ export function renderRunProgressChart(canvasId, sessions) {
   if (existing) existing.destroy();
 
   const toDecimal = pace => {
+    if (!pace || !pace.includes(':')) return null;
     const [m, s] = pace.split(':').map(Number);
     return m + (s || 0) / 60;
   };
   const parseHR = notes => {
     const m = notes?.match(/Ø HF: (\d+)/);
-    return m ? parseInt(m[1]) : null;
+    return m ? parseInt(m[1], 10) : null;
   };
 
   const running = sessions
@@ -203,7 +204,7 @@ export function renderRunProgressChart(canvasId, sessions) {
           grid: { color: '#1e2230' },
           ticks: {
             color: '#e8ff47',
-            callback: v => `${Math.floor(v)}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}`,
+            callback: v => { const sec = Math.round((v % 1) * 60); const min = Math.floor(v) + Math.floor(sec / 60); return `${min}:${String(sec % 60).padStart(2, '0')}`; },
           },
         },
         yHR: {
