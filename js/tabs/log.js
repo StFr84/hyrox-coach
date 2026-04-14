@@ -5,7 +5,7 @@ import { getCurrentPhase, TYPE_ICONS } from '../data/plan-data.js';
 
 const el = () => document.getElementById('tab-log');
 
-let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '', notes: '', date: new Date().toISOString().split('T')[0] };
+let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '', notes: '', avgHR: '', date: new Date().toISOString().split('T')[0] };
 let _sessions = [], _weekMean = null;
 let workoutState = null; // { session_type, date, exercises: [{name, unit, distance, planned_sets, planned_reps, lastValue, sets:[{set_number,value,completed}]}] }
 
@@ -134,6 +134,8 @@ function render(sessions, weekMean) {
   _sessions = sessions ?? _sessions;
   _weekMean = weekMean ?? _weekMean;
   const phase = getCurrentPhase();
+  const planTypeForHR = { laufen: 'ausdauer', skierg: 'skierg', rowing: 'rowing' }[state.type] || state.type;
+  const hrMax = phase.weekPlan.find(d => d.type === planTypeForHR && d.hrMax)?.hrMax ?? null;
   const types = [
     { id: 'laufen',   label: 'Laufen',  icon: '🏃' },
     { id: 'kraft',    label: 'Kraft',   icon: '🏋️' },
@@ -183,6 +185,16 @@ function render(sessions, weekMean) {
     </div>
     ` : ''}
 
+    ${state.type === 'laufen' ? `
+    <div class="section-label">Ø Herzfrequenz — optional</div>
+    <div class="pace-input-row">
+      <input class="settings-input pace-input" id="avg-hr-input" type="number"
+        inputmode="numeric" placeholder="z.B. 132" value="${state.avgHR}"
+        style="font-family:'Barlow Condensed',sans-serif;font-size:1.4em;font-weight:700;color:var(--accent2)">
+      <span style="color:var(--muted);font-size:0.82em;white-space:nowrap">bpm${hrMax ? ` · Ziel &lt;${hrMax}` : ''}</span>
+    </div>
+    ` : ''}
+
     <div class="section-label">Dauer</div>
     <div class="duration-row">
       <button class="dur-btn" id="dur-minus">−</button>
@@ -216,7 +228,7 @@ function render(sessions, weekMean) {
           <div class="session-item">
             <div>
               <div class="session-type">${TYPE_ICONS[s.type] || ''} ${s.type.charAt(0).toUpperCase() + s.type.slice(1)}</div>
-              <div class="session-meta">${new Date(s.created_at).toLocaleDateString('de-DE', {day:'numeric',month:'short'})} · ${s.duration_min} Min · RPE ${s.rpe}</div>
+              <div class="session-meta">${new Date(s.created_at).toLocaleDateString('de-DE', {day:'numeric',month:'short'})} · ${s.duration_min} Min · RPE ${s.rpe}${s.notes ? ' · ' + s.notes : ''}</div>
             </div>
             <div class="session-points">${s.load_points}</div>
           </div>
@@ -285,6 +297,11 @@ function attachListeners(phase, weekMean) {
     paceInput.addEventListener('input', () => { state.pace = paceInput.value.trim(); });
   }
 
+  const avgHRInput = document.getElementById('avg-hr-input');
+  if (avgHRInput) {
+    avgHRInput.addEventListener('input', () => { state.avgHR = avgHRInput.value.trim(); });
+  }
+
   document.getElementById('btn-save-session')?.addEventListener('click', async () => {
     if (!state.rpe) { alert('Bitte RPE auswählen (1–10)'); return; }
     const session = {
@@ -293,12 +310,13 @@ function attachListeners(phase, weekMean) {
       rpe: state.rpe,
       phase: phase.id,
       pace: state.pace || '',
-      notes: state.notes || '',
+      notes: state.avgHR ? `Ø HF: ${state.avgHR} bpm` : (state.notes || ''),
     };
     try { await saveSession(session); } catch { queueSession(session); }
     state.rpe = null;
     state.pace = '';
     state.notes = '';
+    state.avgHR = '';
     state.date = new Date().toISOString().split('T')[0];
     if (workoutState) {
       saveWorkoutLog({ ...workoutState, phase_id: phase.id, created_at: Date.now() });
