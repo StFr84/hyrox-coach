@@ -1,4 +1,5 @@
 import { syncQueue } from './sync.js';
+import { getCurrentPhase } from './data/plan-data.js';
 
 const TAB_MODULES = {
   dashboard: () => import('./tabs/dashboard.js'),
@@ -25,6 +26,50 @@ async function switchTab(tabId) {
     const mod = await TAB_MODULES[tabId]();
     if (mod.refresh) await mod.refresh();
   }
+}
+
+function showPhaseModal(phase) {
+  const overlay = document.createElement('div');
+  overlay.className = 'phase-modal-overlay';
+  overlay.id = 'phase-modal';
+
+  const changesHtml = (phase.changes || []).map(c => `
+    <div class="phase-change-item">
+      <span class="phase-change-icon">${c.icon}</span>
+      <span class="phase-change-text">${c.text}</span>
+    </div>`).join('');
+
+  overlay.innerHTML = `
+    <div class="phase-modal-card">
+      <div class="phase-modal-icon">🚀</div>
+      <div class="phase-modal-title">Neue Phase gestartet!</div>
+      <div class="phase-modal-name">${phase.name}</div>
+      <div class="phase-modal-period">${phase.period} · ${phase.weeks}</div>
+      <div class="phase-modal-divider"></div>
+      <div class="phase-modal-changes-label">Was sich ändert</div>
+      <div class="phase-modal-changes">${changesHtml || '<div style="color:var(--muted);font-size:0.85em">Erste Phase — los geht\'s!</div>'}</div>
+      <button class="phase-modal-confirm" id="btn-confirm-phase">✓ Ich habe meinen Plan angepasst</button>
+      <button class="phase-modal-plan-link" id="btn-view-plan">Plan in der App ansehen →</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  overlay.querySelector('#btn-confirm-phase').addEventListener('click', () => {
+    localStorage.setItem('sub68_confirmedPhase', phase.id);
+    overlay.remove();
+  });
+  overlay.querySelector('#btn-view-plan').addEventListener('click', () => {
+    localStorage.setItem('sub68_confirmedPhase', phase.id);
+    overlay.remove();
+    switchTab('plan');
+  });
+}
+
+function checkPhaseTransition() {
+  const phase = getCurrentPhase();
+  const confirmed = localStorage.getItem('sub68_confirmedPhase');
+  if (phase.id !== confirmed) showPhaseModal(phase);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -55,4 +100,5 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   await switchTab('dashboard');
+  checkPhaseTransition(); // Show after dashboard loads, blocks interaction until confirmed
 });
