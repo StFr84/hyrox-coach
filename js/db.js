@@ -69,7 +69,7 @@ export async function getSessionsForCharts(weeks = 8) {
   const since = new Date();
   since.setDate(since.getDate() - weeks * 7);
   const { data } = await db
-    .from('sessions').select('created_at,load_points,type,pace_per_km')
+    .from('sessions').select('created_at,load_points,type,pace_per_km,notes')
     .gte('created_at', since.toISOString())
     .order('created_at', { ascending: true });
   return data || [];
@@ -119,4 +119,8 @@ export function getWorkoutWip() {
 
 export function clearWorkoutWip() {
   localStorage.removeItem(WIP_KEY);
+}
+
+export function getAllWorkoutLogs() {
+  return JSON.parse(localStorage.getItem(WL_KEY) || '[]');
 }
