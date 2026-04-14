@@ -1,5 +1,5 @@
 import { saveSession, saveHRV, getTodayHRV, getRecentSessions, getAmpelFromRMSSD, getHRVEntries, ampelLabel,
-         saveWorkoutWip, getWorkoutWip, clearWorkoutWip, getLastWorkoutLog } from '../db.js';
+         saveWorkoutWip, getWorkoutWip, clearWorkoutWip, getLastWorkoutLog } from '../db.js'; // saveWorkoutWip used in attachSetListeners (Task 7)
 import { queueSession } from '../sync.js';
 import { getCurrentPhase, TYPE_ICONS } from '../data/plan-data.js';
 
