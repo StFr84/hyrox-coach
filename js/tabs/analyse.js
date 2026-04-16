@@ -18,7 +18,8 @@ async function render() {
   ]);
   const shown = hrvDays === 7 ? hrvEntries.slice(-7) : hrvEntries;
 
-  const workoutLogs = getAllWorkoutLogs();
+  let workoutLogs = [];
+  try { workoutLogs = getAllWorkoutLogs(); } catch { /* corrupt localStorage — skip strength data */ }
   const exerciseMap = {};
   for (const log of workoutLogs) {
     for (const ex of (log.exercises || [])) {
@@ -79,13 +80,14 @@ async function render() {
       <div class="chart-title">🏋️ Kraft — Übungsfortschritt</div>
       ${strengthExercises.length === 0
         ? '<div style="text-align:center;color:var(--muted);font-size:0.82em;padding:12px 0">Noch keine Kraftdaten. Mindestens 2 Einheiten mit Gewichten tracken.</div>'
-        : `<div>${strengthExercises.map(([name, pts]) => {
-            const safeId = 'chart-strength-' + name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+        : `<div>${strengthExercises.map(([name, pts], idx) => {
+            const safeId = `chart-strength-${idx}`;
+            const escapedName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const first = pts[0].avgKg;
             const last = pts[pts.length - 1].avgKg;
             return `<div style="margin-bottom:16px">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-                <span style="font-size:0.78em;color:var(--muted)">${name}</span>
+                <span style="font-size:0.78em;color:var(--muted)">${escapedName}</span>
                 <span style="font-size:0.78em;color:var(--accent)">${first} → ${last} kg</span>
               </div>
               <div style="height:60px"><canvas id="${safeId}"></canvas></div>
@@ -100,9 +102,8 @@ async function render() {
   renderDistributionChart('chart-dist', sessions);
   renderPaceChart('chart-pace', sessions);
   renderRunProgressChart('chart-run-progress', sessions);
-  strengthExercises.forEach(([name, pts]) => {
-    const safeId = 'chart-strength-' + name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    renderStrengthMiniChart(safeId, pts);
+  strengthExercises.forEach(([, pts], idx) => {
+    renderStrengthMiniChart(`chart-strength-${idx}`, pts);
   });
 
   document.getElementById('hrv-7')?.addEventListener('click', () => { hrvDays = 7; render(); });
