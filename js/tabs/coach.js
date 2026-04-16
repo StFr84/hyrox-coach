@@ -53,6 +53,20 @@ function render() {
     </div>
     ` : ''}
 
+    <div class="coach-chips">
+      ${[
+        'Wie soll ich diese Woche trainieren?',
+        'Bin ich auf Kurs für Sub 68?',
+        'Was ist meine größte Schwäche?',
+      ].map(q => `
+        <button class="coach-chip ${!apiKey ? 'disabled' : ''}"
+          ${apiKey ? `data-question="${q}"` : ''}
+          ${!apiKey ? 'title="Erst API-Key in Einstellungen eintragen"' : ''}>
+          ${q}
+        </button>
+      `).join('')}
+    </div>
+
     <button class="checkin-btn" id="btn-checkin">
       📋 Wöchentlicher Check-in starten (Analyse + Plan für nächste Woche)
     </button>
@@ -89,6 +103,17 @@ function render() {
     sendMessage();
   });
   scrollToBottom();
+
+  document.querySelectorAll('.coach-chip:not(.disabled)').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const input = document.getElementById('chat-input');
+      if (input) {
+        input.value = chip.dataset.question;
+        input.dispatchEvent(new Event('input'));
+        input.focus();
+      }
+    });
+  });
 }
 
 function scrollToBottom() {

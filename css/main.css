@@ -501,6 +501,34 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   margin-bottom: 8px;
 }
 
+/* ── Coach Question Chips ───────────────────────────── */
+.coach-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.coach-chip {
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 0.78em;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: left;
+  font-family: inherit;
+}
+.coach-chip:not(.disabled):hover {
+  border-color: var(--accent);
+  background: rgba(232,255,71,0.06);
+}
+.coach-chip.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* ── Settings ───────────────────────────────────────── */
 .settings-section { margin-bottom: 24px; }
 .settings-label { font-size: 0.68em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
