@@ -218,6 +218,11 @@ function render(sessions, weekMean) {
       <div class="result-points" id="load-preview">${state.rpe ? state.duration * state.rpe : '–'}</div>
     </div>
 
+    <div class="section-label">Notizen — optional</div>
+    <textarea class="settings-input" id="notes-input" rows="3"
+      placeholder="Wie war die Einheit? Besonderheiten, Befinden…"
+      style="resize:none;line-height:1.5">${state.notes}</textarea>
+
     <button class="btn-primary" id="btn-save-session">💾 Einheit speichern</button>
 
     <div class="section-label" style="margin-top:24px">Letzte Einheiten</div>
@@ -302,6 +307,11 @@ function attachListeners(phase, weekMean) {
     avgHRInput.addEventListener('input', () => { state.avgHR = avgHRInput.value.trim(); });
   }
 
+  const notesInput = document.getElementById('notes-input');
+  if (notesInput) {
+    notesInput.addEventListener('input', () => { state.notes = notesInput.value; });
+  }
+
   document.getElementById('btn-save-session')?.addEventListener('click', async () => {
     if (!state.rpe) { alert('Bitte RPE auswählen (1–10)'); return; }
     const session = {
@@ -310,7 +320,7 @@ function attachListeners(phase, weekMean) {
       rpe: state.rpe,
       phase: phase.id,
       pace: state.pace || '',
-      notes: state.avgHR ? `Ø HF: ${state.avgHR} bpm` : (state.notes || ''),
+      notes: [state.avgHR ? `Ø HF: ${state.avgHR} bpm` : '', state.notes || ''].filter(Boolean).join(' · '),
     };
     try { await saveSession(session); } catch { queueSession(session); }
     state.rpe = null;
