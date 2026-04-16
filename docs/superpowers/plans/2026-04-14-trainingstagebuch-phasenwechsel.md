@@ -1,6 +1,6 @@
 # Trainingstagebuch & Phasenwechsel Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add set-by-set exercise logging to the Log-Tab and a blocking phase-transition modal to prevent athletes from missing training plan changes.
 
@@ -27,7 +27,7 @@
 **Files:**
 - Modify: `js/data/plan-data.js`
 
-- [ ] **Step 1: Replace the full PHASES constant with this version including exercises**
+- [x] **Step 1: Replace the full PHASES constant with this version including exercises**
 
 Replace the entire content of `js/data/plan-data.js` with:
 
@@ -204,7 +204,7 @@ export function getTodaySession() {
 }
 ```
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 Open DevTools Console and run:
 ```js
@@ -215,7 +215,7 @@ console.log('Ausdauer exercises:', PHASES[1].weekPlan.find(d => d.type === 'ausd
 ```
 Expected output: arrays with name/sets/reps/unit objects. No undefined.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/data/plan-data.js
@@ -229,7 +229,7 @@ git commit -m "feat(data): add structured exercises[] to all training days"
 **Files:**
 - Modify: `js/data/plan-data.js`
 
-- [ ] **Step 1: Add changes arrays to phases base, build, peak, taper**
+- [x] **Step 1: Add changes arrays to phases base, build, peak, taper**
 
 In `js/data/plan-data.js`, add a `changes` property to the phases with index 1–4. Insert after the `rpeMax` line in each phase:
 
@@ -280,7 +280,7 @@ In `js/data/plan-data.js`, add a `changes` property to the phases with index 1�
     ],
 ```
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 ```js
 const { PHASES } = await import('/js/data/plan-data.js');
@@ -289,7 +289,7 @@ console.log('taper changes:', PHASES[4].changes);
 ```
 Expected: arrays with `{ icon, text }` objects. `PHASES[0].changes` should be `undefined`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/data/plan-data.js
@@ -303,7 +303,7 @@ git commit -m "feat(data): add phase transition changes[] to plan data"
 **Files:**
 - Modify: `js/db.js`
 
-- [ ] **Step 1: Append workout log functions at the end of js/db.js**
+- [x] **Step 1: Append workout log functions at the end of js/db.js**
 
 Add these functions after the existing `ampelLabel` function:
 
@@ -343,7 +343,7 @@ export function clearWorkoutWip() {
 }
 ```
 
-- [ ] **Step 2: Verify in browser console**
+- [x] **Step 2: Verify in browser console**
 
 ```js
 const { saveWorkoutLog, getLastWorkoutLog, saveWorkoutWip, getWorkoutWip, clearWorkoutWip } = await import('/js/db.js');
@@ -367,7 +367,7 @@ console.log('All workout log assertions passed');
 ```
 Expected: `All workout log assertions passed` — no assertion errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/db.js
@@ -381,7 +381,7 @@ git commit -m "feat(db): add localStorage-based workout log functions"
 **Files:**
 - Modify: `css/main.css`
 
-- [ ] **Step 1: Append exercise tracking styles at the end of css/main.css**
+- [x] **Step 1: Append exercise tracking styles at the end of css/main.css**
 
 ```css
 /* ── Exercise Tracking ──────────────────────────────── */
@@ -471,11 +471,11 @@ git commit -m "feat(db): add localStorage-based workout log functions"
 }
 ```
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 Open DevTools → Elements and confirm the styles appear in the stylesheet. No visual change yet — exercises aren't rendered yet.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add css/main.css
@@ -489,7 +489,7 @@ git commit -m "feat(css): add exercise card and set chip styles"
 **Files:**
 - Modify: `css/main.css`
 
-- [ ] **Step 1: Append phase modal styles at the end of css/main.css**
+- [x] **Step 1: Append phase modal styles at the end of css/main.css**
 
 ```css
 /* ── Phase Transition Modal ─────────────────────────── */
@@ -568,7 +568,7 @@ git commit -m "feat(css): add exercise card and set chip styles"
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add css/main.css
@@ -582,7 +582,7 @@ git commit -m "feat(css): add phase transition modal styles"
 **Files:**
 - Modify: `js/tabs/log.js`
 
-- [ ] **Step 1: Replace the full content of js/tabs/log.js with this**
+- [x] **Step 1: Replace the full content of js/tabs/log.js with this**
 
 This adds imports, workoutState, exercise block rendering, and WIP restore on init. Set interaction is added in Task 7.
 
@@ -908,7 +908,7 @@ function updateLoadPreview() {
 }
 ```
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 1. Open the app → tap the Log tab
 2. Select "Kraft" as type
@@ -916,7 +916,7 @@ function updateLoadPreview() {
 4. Verify each exercise card shows set chips
 5. Verify "Laufen" type shows the pace input (when workoutState is null, which it won't be if there are ausdauer exercises — check that pace is shown for types with no matching plan exercise)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/tabs/log.js
@@ -930,7 +930,7 @@ git commit -m "feat(log): render exercise block with set chips from plan data"
 **Files:**
 - Modify: `js/tabs/log.js`
 
-- [ ] **Step 1: Replace the attachSetListeners placeholder with the full implementation**
+- [x] **Step 1: Replace the attachSetListeners placeholder with the full implementation**
 
 Find the `attachSetListeners` function at the bottom of `js/tabs/log.js` and replace it:
 
@@ -982,7 +982,7 @@ function attachSetListeners() {
 
 The import at the top of `log.js` already includes `clearWorkoutWip` from Task 6 — no change needed.
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 1. Open app → Log tab → select Kraft
 2. Tap on the first set chip of "Squat"
@@ -992,7 +992,7 @@ The import at the top of `log.js` already includes `clearWorkoutWip` from Task 6
 6. Close and reopen the app → navigate to Log tab → set Kraft → verify the WIP is restored (completed sets still show)
 7. Open DevTools → Application → Local Storage → verify `sub68_workout_wip` key exists with the workout data
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/tabs/log.js
@@ -1006,7 +1006,7 @@ git commit -m "feat(log): add set completion, auto-save WIP, and keyboard Enter 
 **Files:**
 - Modify: `js/app.js`
 
-- [ ] **Step 1: Replace the full content of js/app.js**
+- [x] **Step 1: Replace the full content of js/app.js**
 
 ```js
 import { syncQueue } from './sync.js';
@@ -1115,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 ```
 
-- [ ] **Step 2: Verify the modal appears**
+- [x] **Step 2: Verify the modal appears**
 
 1. Open DevTools → Application → Local Storage
 2. Delete the `sub68_confirmedPhase` key (or set it to a wrong value like `'wrongphase'`)
@@ -1126,11 +1126,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 7. Expected: modal closes, `sub68_confirmedPhase` is set to `'comeback'` in localStorage
 8. Reload: no modal should appear
 
-- [ ] **Step 3: Verify modal does NOT appear on normal reload**
+- [x] **Step 3: Verify modal does NOT appear on normal reload**
 
 After confirming, reload the app 3 times. No modal should appear.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add js/app.js
@@ -1141,7 +1141,7 @@ git commit -m "feat(app): add phase transition detection and blocking confirmati
 
 ## Task 9: Smoke test — full end-to-end
 
-- [ ] **Step 1: Complete a Kraft workout end-to-end**
+- [x] **Step 1: Complete a Kraft workout end-to-end**
 
 1. Open app → Log tab → select Kraft
 2. Complete all sets of the first exercise (enter a weight, tap to complete)
@@ -1151,20 +1151,20 @@ git commit -m "feat(app): add phase transition detection and blocking confirmati
 6. Navigate to Log tab → select Kraft
 7. Verify: exercises 1 and 2 are collapsed (completed), exercise 3 shows open with correct set state
 
-- [ ] **Step 2: Test WIP clears on save**
+- [x] **Step 2: Test WIP clears on save**
 
 1. Complete some sets in a Kraft session
 2. Select RPE and tap "Einheit speichern"
 3. Reopen Log tab → select Kraft
 4. Verify: all exercises are reset (fresh state, no WIP)
 
-- [ ] **Step 3: Test previous-value hint**
+- [x] **Step 3: Test previous-value hint**
 
 1. Complete and save a full Kraft session with Squat at 80 kg
 2. Next day (or simulate by changing date): open Log → Kraft
 3. Verify: "Letztes Mal: 80 kg" appears under the Squat exercise name
 
-- [ ] **Step 4: Test all session types show exercises**
+- [x] **Step 4: Test all session types show exercises**
 
 | Type | Should show exercises |
 |------|-----------------------|
@@ -1174,9 +1174,13 @@ git commit -m "feat(app): add phase transition detection and blocking confirmati
 | skierg | only if weekPlan has skierg day |
 | erholung | ✗ (no exercises) |
 
-- [ ] **Step 5: Final commit**
+- [x] **Step 5: Final commit**
 
 ```bash
 git add -A
 git commit -m "feat: complete Trainingstagebuch and phase transition modal"
 ```
+
+---
+
+**✅ Abgeschlossen: 2026-04-16** — Alle Tasks implementiert und auf `main` gemergt.

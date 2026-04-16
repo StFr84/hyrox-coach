@@ -1,6 +1,6 @@
 # Sub 68 Phase C — Quality Pass Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Fix all known bugs and UX gaps — pace/notes/date fields in Log, expandable plan cards, horizontal station pills, chart empty states, coach suggested chips.
 
@@ -32,7 +32,7 @@
 
 **Context:** `db.js` already stores `session.pace` as `pace_per_km`. The analyse tab shows a pace chart but can never display data because the log form never collects pace. This adds a conditional pace input that appears only for type='laufen'.
 
-- [ ] **Step 1: Add `pace` to state and type-change logic**
+- [x] **Step 1: Add `pace` to state and type-change logic**
 
 In `js/tabs/log.js`, replace line 7:
 ```javascript
@@ -43,7 +43,7 @@ with:
 let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '', notes: '', date: new Date().toISOString().split('T')[0] };
 ```
 
-- [ ] **Step 2: Add pace input HTML after the duration section**
+- [x] **Step 2: Add pace input HTML after the duration section**
 
 In `js/tabs/log.js`, in the `render()` function, find the line that starts with `<div class="section-label">Anstrengung` and insert the following block *before* it:
 
@@ -59,7 +59,7 @@ In `js/tabs/log.js`, in the `render()` function, find the line that starts with 
     ` : ''}
 ```
 
-- [ ] **Step 3: Attach pace input listener in `attachListeners()`**
+- [x] **Step 3: Attach pace input listener in `attachListeners()`**
 
 In `js/tabs/log.js`, at the end of `attachListeners()` (before the closing `}`), add:
 
@@ -70,7 +70,7 @@ In `js/tabs/log.js`, at the end of `attachListeners()` (before the closing `}`),
   }
 ```
 
-- [ ] **Step 4: Pass pace in the save call**
+- [x] **Step 4: Pass pace in the save call**
 
 In `js/tabs/log.js`, replace line 162:
 ```javascript
@@ -88,7 +88,7 @@ with:
     };
 ```
 
-- [ ] **Step 5: Reset pace and notes on save**
+- [x] **Step 5: Reset pace and notes on save**
 
 In `js/tabs/log.js`, replace line 168:
 ```javascript
@@ -101,7 +101,7 @@ with:
     state.notes = '';
 ```
 
-- [ ] **Step 6: Also reset pace when type changes away from laufen**
+- [x] **Step 6: Also reset pace when type changes away from laufen**
 
 In `attachListeners()`, find the type-pill click handler. Replace:
 ```javascript
@@ -163,7 +163,7 @@ Full updated type-pill click handler in `attachListeners()`:
   });
 ```
 
-- [ ] **Step 7: Add CSS for pace input row**
+- [x] **Step 7: Add CSS for pace input row**
 
 In `css/main.css`, after the `.hrv-ampel-badge` block (around line 502), add:
 ```css
@@ -189,7 +189,7 @@ In `css/main.css`, after the `.hrv-ampel-badge` block (around line 502), add:
 }
 ```
 
-- [ ] **Step 8: Verify in browser**
+- [x] **Step 8: Verify in browser**
 
 Run: `python3 -m http.server 8080` from project root, open `http://localhost:8080`
 
@@ -201,7 +201,7 @@ Expected:
 - Enter "5:45" in pace field, set RPE, save → session saves without error
 - Navigate to Analyse tab → pace chart shows the value (after a few runs are logged)
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add js/tabs/log.js css/main.css
@@ -217,7 +217,7 @@ git commit -m "feat(log): add pace input field for running sessions"
 
 **Context:** `db.js` already stores `session.notes` in the `notes` column. This adds an optional textarea above the save button.
 
-- [ ] **Step 1: Add notes textarea HTML**
+- [x] **Step 1: Add notes textarea HTML**
 
 In `js/tabs/log.js` `render()`, find:
 ```javascript
@@ -232,7 +232,7 @@ Insert before it:
 
 ```
 
-- [ ] **Step 2: Attach notes listener in `attachListeners()`**
+- [x] **Step 2: Attach notes listener in `attachListeners()`**
 
 At the end of `attachListeners()` (after the pace listener added in C1), add:
 ```javascript
@@ -242,7 +242,7 @@ At the end of `attachListeners()` (after the pace listener added in C1), add:
   }
 ```
 
-- [ ] **Step 3: Verify in browser**
+- [x] **Step 3: Verify in browser**
 
 Open `http://localhost:8080`, navigate to Log tab.
 
@@ -252,7 +252,7 @@ Expected:
 - Actually: RPE buttons call `updateLoadPreview()` only, they don't re-render. So textarea value is preserved as long as the user doesn't change type (which calls `render()`). This is correct behavior.
 - Save session → notes textarea cleared, session saved to DB
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add js/tabs/log.js
@@ -269,14 +269,14 @@ git commit -m "feat(log): add notes textarea field"
 
 **Context:** Currently clicking a day card opens a full modal sheet. The new behavior: first tap expands the card inline to show details; a "Log" button inside the expanded card leads to the modal (for "Log this session" CTA). Second tap collapses. This makes training details immediately accessible without a modal overlay.
 
-- [ ] **Step 1: Add `expandedDay` state variable**
+- [x] **Step 1: Add `expandedDay` state variable**
 
 At the top of `js/tabs/plan.js`, after the `let activePhaseId` line, add:
 ```javascript
 let expandedDay = null; // stores day.day+day.name key of expanded card
 ```
 
-- [ ] **Step 2: Update week-day card HTML to include inline details**
+- [x] **Step 2: Update week-day card HTML to include inline details**
 
 In the `render()` function, replace the entire `.week-grid` template:
 
@@ -307,7 +307,7 @@ In the `render()` function, replace the entire `.week-grid` template:
     </div>
 ```
 
-- [ ] **Step 3: Update event listeners to toggle expand instead of opening modal directly**
+- [x] **Step 3: Update event listeners to toggle expand instead of opening modal directly**
 
 In `js/tabs/plan.js`, replace the event listener block at the end of `render()`:
 ```javascript
@@ -340,7 +340,7 @@ with:
   });
 ```
 
-- [ ] **Step 4: Add CSS for expanded cards**
+- [x] **Step 4: Add CSS for expanded cards**
 
 In `css/main.css`, after `.day-chevron` (around line 350), add:
 ```css
@@ -363,7 +363,7 @@ In `css/main.css`, after `.day-chevron` (around line 350), add:
 }
 ```
 
-- [ ] **Step 5: Verify in browser**
+- [x] **Step 5: Verify in browser**
 
 Open `http://localhost:8080`, navigate to Plan tab.
 
@@ -376,7 +376,7 @@ Expected:
 - Tapping "⚡ Loggen" opens the modal with "Log this session" button
 - Rest days (Ruhe/So) have no interaction
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add js/tabs/plan.js css/main.css
@@ -393,7 +393,7 @@ git commit -m "feat(plan): expandable inline day cards with colored type borders
 
 **Context:** Currently stations are shown as a vertical list of cards below the week grid. This adds a horizontally scrollable strip of station pills above the existing station list, giving quick visual overview of all 8 stations with priority highlighting.
 
-- [ ] **Step 1: Add station strip HTML above the existing `section-label`**
+- [x] **Step 1: Add station strip HTML above the existing `section-label`**
 
 In `js/tabs/plan.js` `render()`, find the line:
 ```javascript
@@ -426,7 +426,7 @@ Replace this and the following `${STATIONS.map...}` block with:
     `).join('')}
 ```
 
-- [ ] **Step 2: Add CSS for station scroll strip**
+- [x] **Step 2: Add CSS for station scroll strip**
 
 In `css/main.css`, after `.badge-schwaeche` (around line 475), add:
 ```css
@@ -475,7 +475,7 @@ In `css/main.css`, after `.badge-schwaeche` (around line 475), add:
 }
 ```
 
-- [ ] **Step 3: Verify in browser**
+- [x] **Step 3: Verify in browser**
 
 Open `http://localhost:8080`, navigate to Plan tab.
 
@@ -486,7 +486,7 @@ Expected:
 - All stations show a 2-word shortened name and target time
 - Below the scroll strip, the original vertical station list still shows full details
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add js/tabs/plan.js css/main.css
@@ -502,7 +502,7 @@ git commit -m "feat(plan): add horizontal station scroll strip above station lis
 
 **Context:** Currently charts render empty canvases when no data exists. The pace chart only shows a message when zero running sessions with pace exist — it silently shows nothing if sessions exist but all have empty pace. This task adds meaningful empty states for each chart.
 
-- [ ] **Step 1: Replace the entire `render()` function in analyse.js**
+- [x] **Step 1: Replace the entire `render()` function in analyse.js**
 
 Replace the full `async function render()` body with:
 
@@ -572,7 +572,7 @@ async function render() {
 }
 ```
 
-- [ ] **Step 2: Verify in browser (no data state)**
+- [x] **Step 2: Verify in browser (no data state)**
 
 Open `http://localhost:8080` with a fresh browser session (Cmd+Shift+R to force-reload), navigate to Analyse tab.
 
@@ -583,7 +583,7 @@ Expected (with no or few sessions in DB):
 - Clicking that button navigates to Log tab
 - No blank canvas elements when data is missing
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/tabs/analyse.js
@@ -600,7 +600,7 @@ git commit -m "fix(analyse): add meaningful empty states for all four charts"
 
 **Context:** When no API key is configured, the chat is inaccessible but there are no hints about what to ask once configured. This adds 3 tappable question chips: grayed out without key, active with key.
 
-- [ ] **Step 1: Define suggested questions and add chips HTML**
+- [x] **Step 1: Define suggested questions and add chips HTML**
 
 In `js/tabs/coach.js` `render()`, after the `${!apiKey ? ... : ''}` block (after line 54), add:
 
@@ -620,7 +620,7 @@ In `js/tabs/coach.js` `render()`, after the `${!apiKey ? ... : ''}` block (after
     </div>
 ```
 
-- [ ] **Step 2: Attach chip click listeners at the end of `render()`**
+- [x] **Step 2: Attach chip click listeners at the end of `render()`**
 
 In `js/tabs/coach.js`, add at the end of `render()` (after `scrollToBottom();`):
 
@@ -637,7 +637,7 @@ In `js/tabs/coach.js`, add at the end of `render()` (after `scrollToBottom();`):
   });
 ```
 
-- [ ] **Step 3: Add CSS for chips**
+- [x] **Step 3: Add CSS for chips**
 
 In `css/main.css`, after `.checkin-btn` (around line 441), add:
 
@@ -671,7 +671,7 @@ In `css/main.css`, after `.checkin-btn` (around line 441), add:
 }
 ```
 
-- [ ] **Step 4: Verify in browser**
+- [x] **Step 4: Verify in browser**
 
 Open `http://localhost:8080`, navigate to Coach tab.
 
@@ -685,7 +685,7 @@ Expected (with API key set in Settings):
 - Clicking a chip pre-fills the textarea with that question
 - User can still edit or send as-is
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add js/tabs/coach.js css/main.css
@@ -702,7 +702,7 @@ git commit -m "feat(coach): add suggested question chips with disabled state whe
 
 **Context:** Sessions always get `now()` as their timestamp. This adds an optional date picker so users can backdate forgotten sessions.
 
-- [ ] **Step 1: Add `date` to state (already added in C1 — verify it's there)**
+- [x] **Step 1: Add `date` to state (already added in C1 — verify it's there)**
 
 State should already be:
 ```javascript
@@ -710,7 +710,7 @@ let state = { type: 'laufen', duration: 60, rpe: null, todayHRV: null, pace: '',
 ```
 If not, add `date: new Date().toISOString().split('T')[0]` to the state object.
 
-- [ ] **Step 2: Add date picker HTML near top of Log form**
+- [x] **Step 2: Add date picker HTML near top of Log form**
 
 In `js/tabs/log.js` `render()`, after `<div class="screen-title">⚡ Training erfassen</div>`, add:
 
@@ -726,7 +726,7 @@ In `js/tabs/log.js` `render()`, after `<div class="screen-title">⚡ Training er
     </div>
 ```
 
-- [ ] **Step 3: Attach date listener**
+- [x] **Step 3: Attach date listener**
 
 In `attachListeners()`, add:
 ```javascript
@@ -739,7 +739,7 @@ In `attachListeners()`, add:
   }
 ```
 
-- [ ] **Step 4: Pass timestamp to saveSession**
+- [x] **Step 4: Pass timestamp to saveSession**
 
 In the save handler, replace:
 ```javascript
@@ -774,7 +774,7 @@ Also reset `state.date` after save:
     state.date = new Date().toISOString().split('T')[0];
 ```
 
-- [ ] **Step 5: Update `db.js` to support optional `created_at`**
+- [x] **Step 5: Update `db.js` to support optional `created_at`**
 
 In `js/db.js`, replace the `saveSession` function:
 ```javascript
@@ -794,7 +794,7 @@ export async function saveSession(session) {
 }
 ```
 
-- [ ] **Step 6: Add CSS for past session banner**
+- [x] **Step 6: Add CSS for past session banner**
 
 In `css/main.css`, after `.pace-input-row` block, add:
 ```css
@@ -810,7 +810,7 @@ In `css/main.css`, after `.pace-input-row` block, add:
 }
 ```
 
-- [ ] **Step 7: Verify in browser**
+- [x] **Step 7: Verify in browser**
 
 Open `http://localhost:8080`, navigate to Log tab.
 
@@ -821,7 +821,7 @@ Expected:
 - Resetting back to today hides the banner
 - After save, date resets to today
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add js/tabs/log.js js/db.js css/main.css
@@ -835,7 +835,7 @@ git commit -m "feat(log): add past-session date picker with created_at support i
 **Files:**
 - Modify: `sw.js`
 
-- [ ] **Step 1: Bump cache version**
+- [x] **Step 1: Bump cache version**
 
 In `sw.js`, replace line 1:
 ```javascript
@@ -846,11 +846,11 @@ with:
 const CACHE_NAME = 'sub68-v13';
 ```
 
-- [ ] **Step 2: Verify in browser**
+- [x] **Step 2: Verify in browser**
 
 Open DevTools → Application → Service Workers. After Cmd+Shift+R, verify the new service worker is active and the old `sub68-v12` cache is deleted (check Cache Storage).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sw.js
@@ -862,12 +862,16 @@ git commit -m "chore: bump service worker cache to v13 (Phase C)"
 ## Phase C Complete
 
 All 8 tasks done. Verify success criteria from the spec:
-- [ ] Running sessions can be logged with pace (min:sec format, conditional on type=laufen)
-- [ ] Sessions can be logged with optional notes text
-- [ ] Plan day cards expand inline to show details without full modal
-- [ ] All 8 Hyrox stations visible as scrollable pill strip
-- [ ] Analyse charts show meaningful empty states instead of empty canvases
-- [ ] Coach tab shows 3 suggested question chips (grayed without key, active with key)
-- [ ] Past session timestamp can be set via date picker
+- [x] Running sessions can be logged with pace (min:sec format, conditional on type=laufen)
+- [x] Sessions can be logged with optional notes text
+- [x] Plan day cards expand inline to show details without full modal
+- [x] All 8 Hyrox stations visible as scrollable pill strip
+- [x] Analyse charts show meaningful empty states instead of empty canvases
+- [x] Coach tab shows 3 suggested question chips (grayed without key, active with key)
+- [x] Past session timestamp can be set via date picker
 
 Push to GitHub Pages (`git push`) to deploy.
+
+---
+
+**✅ Abgeschlossen: 2026-04-16** — Alle 8 Tasks implementiert und auf `main` gemergt. Deployed via GitHub Pages. Zusätzlich implementiert: AvgHR-Feld im Log, XSS-Escape für Exercise-Namen, index-basierte Canvas-IDs.

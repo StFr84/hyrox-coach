@@ -1,6 +1,6 @@
 # Fortschrittsanzeige & Strava-HR-Import — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add HR import to Strava sync and show strength/running progress mini-charts at the bottom of the Analyse-Tab.
 
@@ -28,7 +28,7 @@
 
 **Context:** `getSessionsForCharts` currently selects `'created_at,load_points,type,pace_per_km'` — it must also include `notes` so the run progress chart can parse avg HR. `getAllWorkoutLogs()` is a new simple getter for the localStorage workout logs array.
 
-- [ ] **Step 1: Add `notes` to the select in `getSessionsForCharts`**
+- [x] **Step 1: Add `notes` to the select in `getSessionsForCharts`**
 
 In `js/db.js`, find this line (around line 72):
 ```js
@@ -39,7 +39,7 @@ Replace with:
     .from('sessions').select('created_at,load_points,type,pace_per_km,notes')
 ```
 
-- [ ] **Step 2: Add `getAllWorkoutLogs()` at the end of db.js**
+- [x] **Step 2: Add `getAllWorkoutLogs()` at the end of db.js**
 
 Append after the existing `clearWorkoutWip()` function:
 ```js
@@ -48,11 +48,11 @@ export function getAllWorkoutLogs() {
 }
 ```
 
-- [ ] **Step 3: Verify manually**
+- [x] **Step 3: Verify manually**
 
 Open `http://localhost:3000` → Analyse-Tab → no errors in console. The existing charts still render correctly.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add js/db.js
@@ -68,7 +68,7 @@ git commit -m "feat(db): add getAllWorkoutLogs and include notes in getSessionsF
 
 **Context:** `syncActivities()` currently sets `notes: act.name || ''`. Strava activities include `average_heartrate` (numeric bpm, may be `null` if no HR monitor). When HR is available, store it as `"Ø HF: 132 bpm"` (same format as manual entry). When not available, fall back to the activity name.
 
-- [ ] **Step 1: Update notes construction in `syncActivities()`**
+- [x] **Step 1: Update notes construction in `syncActivities()`**
 
 In `js/strava.js`, find these lines (around line 83–93):
 ```js
@@ -101,13 +101,13 @@ Replace with:
     });
 ```
 
-- [ ] **Step 2: Verify manually**
+- [x] **Step 2: Verify manually**
 
 Open Settings-Tab → Strava sync → if connected, sync → check Supabase or recent sessions list: laufen sessions should show `"Ø HF: X bpm"` in the meta row.
 
 *(If not connected to Strava, skip sync test — the code change is straightforward.)*
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/strava.js
@@ -123,7 +123,7 @@ git commit -m "feat(strava): import average_heartrate as notes on sync"
 
 **Context:** Dual-axis Chart.js line chart. Left Y-axis: pace in decimal minutes (reversed — lower = faster). Right Y-axis: avg HR in bpm. HR data is parsed from the `notes` field (`"Ø HF: 132 bpm"`). Only shows if at least 2 laufen sessions with pace exist. HR axis only shown if at least one HR value is present.
 
-- [ ] **Step 1: Append `renderRunProgressChart()` to `js/charts.js`**
+- [x] **Step 1: Append `renderRunProgressChart()` to `js/charts.js`**
 
 ```js
 export function renderRunProgressChart(canvasId, sessions) {
@@ -214,11 +214,11 @@ export function renderRunProgressChart(canvasId, sessions) {
 }
 ```
 
-- [ ] **Step 2: Verify no syntax errors**
+- [x] **Step 2: Verify no syntax errors**
 
 Open `http://localhost:3000` → Analyse-Tab → no console errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/charts.js
@@ -234,7 +234,7 @@ git commit -m "feat(charts): add renderRunProgressChart with dual pace/HR axes"
 
 **Context:** Small line chart for a single exercise. Input is an array of `{ date: 'YYYY-MM-DD', avgKg: number }` sorted oldest-first. Height is 60px, no legend, minimal tick font size.
 
-- [ ] **Step 1: Append `renderStrengthMiniChart()` to `js/charts.js`**
+- [x] **Step 1: Append `renderStrengthMiniChart()` to `js/charts.js`**
 
 ```js
 export function renderStrengthMiniChart(canvasId, dataPoints) {
@@ -271,11 +271,11 @@ export function renderStrengthMiniChart(canvasId, dataPoints) {
 }
 ```
 
-- [ ] **Step 2: Verify no syntax errors**
+- [x] **Step 2: Verify no syntax errors**
 
 Open `http://localhost:3000` → Analyse-Tab → no console errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add js/charts.js
@@ -293,7 +293,7 @@ git commit -m "feat(charts): add renderStrengthMiniChart for per-exercise progre
 
 The strength data processing: iterate all workout logs, collect completed kg-sets per exercise name, compute average per session, sort oldest-first. Only show exercises with `unit === 'kg'` and ≥ 2 data points.
 
-- [ ] **Step 1: Update imports**
+- [x] **Step 1: Update imports**
 
 In `js/tabs/analyse.js`, replace:
 ```js
@@ -306,7 +306,7 @@ import { getHRVEntries, getSessionsForCharts, getAllWorkoutLogs } from '../db.js
 import { renderHRVChart, renderWeeklyLoadChart, renderDistributionChart, renderPaceChart, renderRunProgressChart, renderStrengthMiniChart } from '../charts.js';
 ```
 
-- [ ] **Step 2: Build strength data in `render()`**
+- [x] **Step 2: Build strength data in `render()`**
 
 In `js/tabs/analyse.js`, inside the `async function render()`, after the `const [hrvEntries, sessions] = await Promise.all([...])` line, add:
 
@@ -329,7 +329,7 @@ In `js/tabs/analyse.js`, inside the `async function render()`, after the `const 
   const strengthExercises = Object.entries(exerciseMap).filter(([, pts]) => pts.length >= 2);
 ```
 
-- [ ] **Step 3: Add HTML for the two new sections**
+- [x] **Step 3: Add HTML for the two new sections**
 
 In `js/tabs/analyse.js`, inside `el().innerHTML = \`...\``, append these two chart-containers after the existing pace chart container:
 
@@ -362,7 +362,7 @@ In `js/tabs/analyse.js`, inside `el().innerHTML = \`...\``, append these two cha
     </div>
 ```
 
-- [ ] **Step 4: Call the new render functions**
+- [x] **Step 4: Call the new render functions**
 
 In `js/tabs/analyse.js`, after the existing render calls (`renderHRVChart`, `renderWeeklyLoadChart`, `renderDistributionChart`, `renderPaceChart`), append:
 
@@ -374,16 +374,20 @@ In `js/tabs/analyse.js`, after the existing render calls (`renderHRVChart`, `ren
   });
 ```
 
-- [ ] **Step 5: Verify manually**
+- [x] **Step 5: Verify manually**
 
 Open `http://localhost:3000` → Analyse-Tab → scroll to bottom:
 - "🏃 Laufen — Pace & HF": either shows chart (if ≥2 laufen sessions with pace) or empty-state message
 - "🏋️ Kraft — Übungsfortschritt": either shows mini-charts per exercise (if ≥2 kraft sessions logged) or empty-state message
 - No console errors
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add js/tabs/analyse.js
 git commit -m "feat(analyse): add running and strength progress charts"
 ```
+
+---
+
+**✅ Abgeschlossen: 2026-04-16** — Alle 5 Tasks implementiert und auf `main` gemergt.
