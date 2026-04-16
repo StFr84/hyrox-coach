@@ -18,6 +18,14 @@ async function render() {
   ]);
   const shown = hrvDays === 7 ? hrvEntries.slice(-7) : hrvEntries;
 
+  const hasHRV = shown.length > 0;
+  const hasLoad = sessions.length > 0;
+  const runSessions = sessions.filter(s => s.type === 'laufen');
+  const runWithPace = runSessions.filter(s => s.pace_per_km);
+  const hasPace = runWithPace.length > 0;
+  const hasRunProgress = runWithPace.length >= 2;
+  const hasRunsButNoPace = runSessions.length > 0 && runWithPace.length === 0;
+
   let workoutLogs = [];
   try { workoutLogs = getAllWorkoutLogs(); } catch { /* corrupt localStorage — skip strength data */ }
   const exerciseMap = {};
@@ -47,39 +55,45 @@ async function render() {
           <button class="${hrvDays === 30 ? 'active' : ''}" id="hrv-30">30T</button>
         </div>
       </div>
-      <div style="height:180px"><canvas id="chart-hrv"></canvas></div>
+      ${hasHRV
+        ? `<div style="height:180px"><canvas id="chart-hrv"></canvas></div>`
+        : `<div class="empty-state"><div class="empty-icon">💚</div>Noch keine HRV-Daten.<br>Trage täglich deinen RMSSD-Wert im Log ein.</div>`}
     </div>
 
     <div class="chart-container">
       <div class="chart-title">Wochenbelastung (Session-RPE Pkt)</div>
-      <div style="height:160px"><canvas id="chart-load"></canvas></div>
+      ${hasLoad
+        ? `<div style="height:160px"><canvas id="chart-load"></canvas></div>`
+        : `<div class="empty-state"><div class="empty-icon">📅</div>Noch keine Trainingseinheiten.<br>Log dein erstes Workout im ⚡ Tab.</div>`}
     </div>
 
     <div class="chart-container">
       <div class="chart-title">Trainingsverteilung</div>
-      <div style="height:180px"><canvas id="chart-dist"></canvas></div>
+      ${hasLoad
+        ? `<div style="height:180px"><canvas id="chart-dist"></canvas></div>`
+        : `<div class="empty-state"><div class="empty-icon">🥧</div>Noch keine Einheiten zum Anzeigen.</div>`}
     </div>
 
     <div class="chart-container">
       <div class="chart-title">Pace-Entwicklung (Laufen)</div>
-      <div style="height:160px"><canvas id="chart-pace"></canvas></div>
-      ${sessions.filter(s => s.type === 'laufen' && s.pace_per_km).length === 0
-        ? '<div style="text-align:center;color:var(--muted);font-size:0.82em;margin-top:8px">Noch keine Pace-Daten. Beim Loggen Pace eintragen.</div>'
-        : ''}
+      ${hasPace
+        ? `<div style="height:160px"><canvas id="chart-pace"></canvas></div>`
+        : hasRunsButNoPace
+          ? `<div class="empty-state"><div class="empty-icon">🏃</div>Du hast Läufe geloggt, aber noch keine Pace eingetragen.</div>`
+          : `<div class="empty-state"><div class="empty-icon">🏃</div>Noch keine Laufdaten. Leg los!</div>`}
     </div>
 
     <div class="chart-container">
       <div class="chart-title">🏃 Laufen — Pace & HF</div>
-      <div style="height:160px"><canvas id="chart-run-progress"></canvas></div>
-      ${sessions.filter(s => s.type === 'laufen' && s.pace_per_km).length < 2
-        ? '<div style="text-align:center;color:var(--muted);font-size:0.82em;margin-top:8px">Mindestens 2 Laufen-Einheiten mit Pace nötig.</div>'
-        : ''}
+      ${hasRunProgress
+        ? `<div style="height:160px"><canvas id="chart-run-progress"></canvas></div>`
+        : `<div class="empty-state"><div class="empty-icon">📈</div>Mindestens 2 Laufen-Einheiten mit Pace nötig.</div>`}
     </div>
 
     <div class="chart-container">
       <div class="chart-title">🏋️ Kraft — Übungsfortschritt</div>
       ${strengthExercises.length === 0
-        ? '<div style="text-align:center;color:var(--muted);font-size:0.82em;padding:12px 0">Noch keine Kraftdaten. Mindestens 2 Einheiten mit Gewichten tracken.</div>'
+        ? '<div class="empty-state"><div class="empty-icon">🏋️</div>Noch keine Kraftdaten.<br>Mindestens 2 Einheiten mit Gewichten tracken.</div>'
         : `<div>${strengthExercises.map(([name, pts], idx) => {
             const safeId = `chart-strength-${idx}`;
             const escapedName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -97,11 +111,11 @@ async function render() {
     </div>
   `;
 
-  renderHRVChart('chart-hrv', shown);
-  renderWeeklyLoadChart('chart-load', sessions);
-  renderDistributionChart('chart-dist', sessions);
-  renderPaceChart('chart-pace', sessions);
-  renderRunProgressChart('chart-run-progress', sessions);
+  if (hasHRV) renderHRVChart('chart-hrv', shown);
+  if (hasLoad) renderWeeklyLoadChart('chart-load', sessions);
+  if (hasLoad) renderDistributionChart('chart-dist', sessions);
+  if (hasPace) renderPaceChart('chart-pace', sessions);
+  if (hasRunProgress) renderRunProgressChart('chart-run-progress', sessions);
   strengthExercises.forEach(([, pts], idx) => {
     renderStrengthMiniChart(`chart-strength-${idx}`, pts);
   });
