@@ -148,6 +148,16 @@ function render(sessions, weekMean) {
   el().innerHTML = `
     <div class="screen-title">⚡ Training erfassen</div>
 
+    ${state.date !== new Date().toISOString().split('T')[0] ? `
+    <div class="past-session-banner">⏮ Vergangene Einheit: ${new Date(state.date + 'T12:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+    ` : ''}
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px">
+      <input type="date" id="session-date" class="settings-input"
+        value="${state.date}"
+        max="${new Date().toISOString().split('T')[0]}"
+        style="width:auto;padding:6px 10px;font-size:0.82em;color:var(--muted)">
+    </div>
+
     ${!state.todayHRV ? `
     <div class="section-label">HRV heute morgen (RMSSD in ms)</div>
     <div class="hrv-input-row">
@@ -312,8 +322,17 @@ function attachListeners(phase, weekMean) {
     notesInput.addEventListener('input', () => { state.notes = notesInput.value; });
   }
 
+  const dateInput = document.getElementById('session-date');
+  if (dateInput) {
+    dateInput.addEventListener('change', () => {
+      state.date = dateInput.value;
+      render(_sessions, _weekMean);
+    });
+  }
+
   document.getElementById('btn-save-session')?.addEventListener('click', async () => {
     if (!state.rpe) { alert('Bitte RPE auswählen (1–10)'); return; }
+    const today = new Date().toISOString().split('T')[0];
     const session = {
       type: state.type,
       duration: state.duration,
@@ -321,6 +340,7 @@ function attachListeners(phase, weekMean) {
       phase: phase.id,
       pace: state.pace || '',
       notes: [state.avgHR ? `Ø HF: ${state.avgHR} bpm` : '', state.notes || ''].filter(Boolean).join(' · '),
+      timestamp: state.date !== today ? new Date(state.date + 'T12:00').toISOString() : undefined,
     };
     try { await saveSession(session); } catch { queueSession(session); }
     state.rpe = null;

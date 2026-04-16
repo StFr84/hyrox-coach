@@ -4,7 +4,7 @@ const { createClient } = window.supabase;
 export const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export async function saveSession(session) {
-  const { error } = await db.from('sessions').insert([{
+  const record = {
     athlete: 'steven_fredrickson',
     type: session.type,
     duration_min: session.duration,
@@ -12,7 +12,9 @@ export async function saveSession(session) {
     phase: session.phase,
     notes: session.notes || '',
     pace_per_km: session.pace || '',
-  }]);
+  };
+  if (session.timestamp) record.created_at = session.timestamp;
+  const { error } = await db.from('sessions').insert([record]);
   if (error) throw error;
 }
 
