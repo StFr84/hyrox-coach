@@ -348,6 +348,67 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .day-name { font-weight: 700; font-size: 0.9em; }
 .day-detail { font-size: 0.75em; color: var(--muted); margin-top: 1px; }
 .day-chevron { color: var(--muted); font-size: 0.8em; }
+.week-day.expanded { background: var(--bg3); }
+.day-details-text {
+  font-size: 0.78em;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 8px;
+}
+.day-log-btn {
+  margin-top: 8px;
+  padding: 6px 14px !important;
+  font-size: 0.75em !important;
+  border-radius: 20px !important;
+  width: auto !important;
+  display: inline-block;
+}
+
+/* ── Stations Scroll Strip ──────────────────────────── */
+.stations-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+}
+.stations-scroll::-webkit-scrollbar { display: none; }
+.station-pill {
+  flex-shrink: 0;
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: 12px;
+  padding: 10px 12px;
+  min-width: 90px;
+  text-align: center;
+  cursor: default;
+}
+.station-pill.schwaeche {
+  border-color: rgba(255,107,107,0.4);
+  background: rgba(255,107,107,0.06);
+}
+.station-pill-name {
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.station-pill-time {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1em;
+  font-weight: 800;
+  color: var(--accent2);
+}
+.station-pill-badge {
+  font-size: 0.58em;
+  color: var(--danger);
+  font-weight: 700;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 
 /* ── Modal ──────────────────────────────────────────── */
 .modal-overlay {
