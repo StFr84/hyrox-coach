@@ -1,5 +1,5 @@
 import { getHRVEntries, getSessionsForCharts, getAllWorkoutLogs } from '../db.js';
-import { renderHRVChart, renderWeeklyLoadChart, renderDistributionChart, renderPaceChart, renderRunProgressChart, renderStrengthMiniChart } from '../charts.js';
+import { renderHRVChart, renderWeeklyLoadChart, renderDistributionChart, renderRunProgressChart, renderStrengthMiniChart } from '../charts.js';
 
 const el = () => document.getElementById('tab-analyse');
 let hrvDays = 7;
@@ -20,11 +20,8 @@ async function render() {
 
   const hasHRV = shown.length > 0;
   const hasLoad = sessions.length > 0;
-  const runSessions = sessions.filter(s => s.type === 'laufen');
-  const runWithPace = runSessions.filter(s => s.pace_per_km);
-  const hasPace = runWithPace.length > 0;
+  const runWithPace = sessions.filter(s => s.type === 'laufen' && s.pace_per_km);
   const hasRunProgress = runWithPace.length >= 2;
-  const hasRunsButNoPace = runSessions.length > 0 && runWithPace.length === 0;
 
   let workoutLogs = [];
   try { workoutLogs = getAllWorkoutLogs(); } catch { /* corrupt localStorage — skip strength data */ }
@@ -42,7 +39,9 @@ async function render() {
       exerciseMap[ex.name].unshift({ date: log.date, avgKg: parseFloat(avgKg.toFixed(1)) });
     }
   }
-  const strengthExercises = Object.entries(exerciseMap).filter(([, pts]) => pts.length >= 2);
+  const strengthExercises = Object.entries(exerciseMap)
+    .filter(([, pts]) => pts.length >= 2)
+    .map(([name, pts]) => [name, pts.slice().sort((a, b) => a.date.localeCompare(b.date))]);
 
   el().innerHTML = `
     <div class="screen-title">📈 Analyse</div>
@@ -72,15 +71,6 @@ async function render() {
       ${hasLoad
         ? `<div style="height:180px"><canvas id="chart-dist"></canvas></div>`
         : `<div class="empty-state"><div class="empty-icon">🥧</div>Noch keine Einheiten zum Anzeigen.</div>`}
-    </div>
-
-    <div class="chart-container">
-      <div class="chart-title">Pace-Entwicklung (Laufen)</div>
-      ${hasPace
-        ? `<div style="height:160px"><canvas id="chart-pace"></canvas></div>`
-        : hasRunsButNoPace
-          ? `<div class="empty-state"><div class="empty-icon">🏃</div>Du hast Läufe geloggt, aber noch keine Pace eingetragen.</div>`
-          : `<div class="empty-state"><div class="empty-icon">🏃</div>Noch keine Laufdaten. Leg los!</div>`}
     </div>
 
     <div class="chart-container">
@@ -114,7 +104,6 @@ async function render() {
   if (hasHRV) renderHRVChart('chart-hrv', shown);
   if (hasLoad) renderWeeklyLoadChart('chart-load', sessions);
   if (hasLoad) renderDistributionChart('chart-dist', sessions);
-  if (hasPace) renderPaceChart('chart-pace', sessions);
   if (hasRunProgress) renderRunProgressChart('chart-run-progress', sessions);
   strengthExercises.forEach(([, pts], idx) => {
     renderStrengthMiniChart(`chart-strength-${idx}`, pts);

@@ -21,8 +21,10 @@ function toPace(avgSpeedMs) {
   if (!avgSpeedMs || avgSpeedMs <= 0) return '';
   const minPerKm = 1000 / avgSpeedMs / 60;
   const min = Math.floor(minPerKm);
-  const sec = Math.round((minPerKm - min) * 60);
-  return `${min}:${sec.toString().padStart(2, '0')}`;
+  let sec = Math.round((minPerKm - min) * 60);
+  const carryMin = sec === 60 ? 1 : 0;
+  sec = sec % 60;
+  return `${min + carryMin}:${sec.toString().padStart(2, '0')}`;
 }
 
 export function getStravaTokens() {
