@@ -100,12 +100,14 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 
 /* ── Hero Card ──────────────────────────────────────── */
 .hero-card {
-  background: linear-gradient(135deg, #1a1f2e 0%, #0d1520 100%);
+  background: linear-gradient(160deg, var(--bg2) 0%, var(--bg) 100%);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 10px;
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--bg3);
+  text-align: center;
 }
 .hero-card::before {
   display: none;
@@ -139,7 +141,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 }
 .ampel-banner.gruen { background: rgba(78,203,113,0.12); border: 1px solid rgba(78,203,113,0.3); color: var(--success); }
 .ampel-banner.gelb  { background: rgba(255,179,71,0.12);  border: 1px solid rgba(255,179,71,0.3);  color: var(--warn); }
-.ampel-banner.rot   { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3); color: var(--danger); }
+.ampel-banner.rot   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--danger); }
 .ampel-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
 /* ── Stats Grid ─────────────────────────────────────── */
@@ -169,7 +171,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .today-info .today-detail { font-size: 0.78em; color: var(--muted); margin-top: 2px; }
 .btn-log {
   background: var(--accent);
-  color: #0d0f14;
+  color: #0f1117;
   border: none;
   border-radius: 20px;
   padding: 7px 16px;
@@ -265,7 +267,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .btn-primary {
   width: 100%;
   background: var(--accent);
-  color: #0d0f14;
+  color: #0f1117;
   border: none;
   border-radius: 14px;
   padding: 16px;
@@ -380,8 +382,8 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   cursor: default;
 }
 .station-pill.schwaeche {
-  border-color: rgba(255,107,107,0.4);
-  background: rgba(255,107,107,0.06);
+  border-color: rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.06);
 }
 .station-pill-name {
   font-size: 0.7em;
@@ -439,14 +441,14 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   font-size: 0.72em;
   cursor: pointer;
 }
-.chart-toggle button.active { background: var(--accent); color: #0d0f14; font-weight: 700; }
+.chart-toggle button.active { background: var(--accent); color: #0f1117; font-weight: 700; }
 
 /* ── Coach Chat ─────────────────────────────────────── */
 .coach-header { margin-bottom: 14px; }
 .coach-header h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5em; font-weight: 800; }
 .chat-messages { display: flex; flex-direction: column; gap: 12px; margin-bottom: 80px; }
 .chat-msg { max-width: 88%; padding: 12px 14px; border-radius: 16px; font-size: 0.9em; line-height: 1.5; }
-.chat-msg.user { align-self: flex-end; background: var(--accent); color: #0d0f14; font-weight: 600; border-bottom-right-radius: 4px; }
+.chat-msg.user { align-self: flex-end; background: var(--accent); color: #0f1117; font-weight: 600; border-bottom-right-radius: 4px; }
 .chat-msg.assistant { align-self: flex-start; background: var(--bg2); border-bottom-left-radius: 4px; }
 .chat-msg.thinking { color: var(--muted); font-style: italic; }
 .chat-input-bar {
@@ -557,7 +559,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .station-name { font-weight: 700; font-size: 0.9em; }
 .station-detail { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
 .station-time { font-family: 'Barlow Condensed', sans-serif; font-size: 1.2em; font-weight: 800; color: var(--accent2); }
-.badge-schwaeche { font-size: 0.65em; background: rgba(255,107,107,0.15); color: var(--danger); border-radius: 6px; padding: 2px 7px; font-weight: 700; margin-top: 3px; display: inline-block; }
+.badge-schwaeche { font-size: 0.65em; background: rgba(239,68,68,0.15); color: var(--danger); border-radius: 6px; padding: 2px 7px; font-weight: 700; margin-top: 3px; display: inline-block; }
 
 /* ── HRV Input ──────────────────────────────────────── */
 .hrv-input-row {

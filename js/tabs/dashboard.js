@@ -55,7 +55,7 @@ async function render() {
       </div>
     </div>
 
-    <div class="hero-card" style="text-align:center;border:1px solid var(--bg3);">
+    <div class="hero-card">
       <div class="hero-label" style="margin-bottom:8px;">Zielzeit-Prognose</div>
       <div class="ring-chart-wrap">
         <svg viewBox="0 0 120 120" class="ring-chart">
