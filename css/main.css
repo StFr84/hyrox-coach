@@ -1,15 +1,15 @@
 /* ── Variables ─────────────────────────────────────── */
 :root {
-  --bg: #0d0f14;
-  --bg2: #161920;
-  --bg3: #1e2230;
-  --accent: #e8ff47;
-  --accent2: #47c8ff;
-  --text: #f0f2f8;
-  --muted: #7a8099;
-  --success: #4ecb71;
-  --warn: #ffb347;
-  --danger: #ff6b6b;
+  --bg: #0f1117;
+  --bg2: #181c26;
+  --bg3: #1e2438;
+  --accent: #39D98A;
+  --accent2: #60A5FA;
+  --text: #e8eaf0;
+  --muted: #4a5270;
+  --success: #39D98A;
+  --warn: #F59E0B;
+  --danger: #EF4444;
   --nav-h: 64px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -89,11 +89,13 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   border-radius: 14px;
   padding: 14px;
   margin-bottom: 10px;
+  border: 1px solid var(--bg3);
 }
 .card-sm {
   background: var(--bg2);
   border-radius: 12px;
   padding: 12px;
+  border: 1px solid var(--bg3);
 }
 
 /* ── Hero Card ──────────────────────────────────────── */
@@ -151,7 +153,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 
 /* ── Stats Grid ─────────────────────────────────────── */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.stat-card { background: var(--bg2); border-radius: 12px; padding: 12px; }
+.stat-card { background: var(--bg2); border-radius: 12px; padding: 12px; border: 1px solid var(--bg3); }
 .stat-label { font-size: 0.68em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
 .stat-value {
   font-family: 'Barlow Condensed', sans-serif;
@@ -339,6 +341,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   gap: 12px;
   cursor: pointer;
   transition: background 0.15s;
+  border: 1px solid var(--bg3);
 }
 .week-day:active { background: var(--bg3); }
 .week-day.rest { opacity: 0.5; cursor: default; }
@@ -426,13 +429,14 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   width: 100%;
   max-height: 80dvh;
   overflow-y: auto;
+  border: 1px solid var(--bg3);
 }
 .modal-handle { width: 40px; height: 4px; background: var(--bg3); border-radius: 2px; margin: 0 auto 20px; }
 .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.4em; font-weight: 800; margin-bottom: 14px; }
 .modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 1.4em; cursor: pointer; }
 
 /* ── Chart Container ────────────────────────────────── */
-.chart-container { background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.chart-container { background: var(--bg2); border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid var(--bg3); }
 .chart-title { font-size: 0.78em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
 .chart-toggle { display: flex; gap: 6px; float: right; }
 .chart-toggle button {
@@ -557,6 +561,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border: 1px solid var(--bg3);
 }
 .station-name { font-weight: 700; font-size: 0.9em; }
 .station-detail { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
@@ -648,6 +653,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   padding: 10px 12px;
   margin-bottom: 8px;
   transition: opacity 0.2s;
+  border: 1px solid var(--bg3);
 }
 .exercise-card.collapsed {
   display: flex;
@@ -685,7 +691,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .set-chips { display: flex; gap: 6px; flex-wrap: wrap; }
 .set-chip {
   background: var(--bg);
-  border: 1px solid #222;
+  border: 1px solid var(--bg3);
   border-radius: 8px;
   padding: 6px 8px;
   text-align: center;
@@ -729,7 +735,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .phase-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(13,15,20,0.94);
+  background: rgba(15,17,23,0.94);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -778,7 +784,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
 .phase-modal-confirm {
   width: 100%;
   background: var(--accent);
-  color: #0d0f14;
+  color: #0f1117;
   border: none;
   border-radius: 12px;
   padding: 14px;
@@ -798,4 +804,35 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   border: none;
   cursor: pointer;
   width: 100%;
+}
+
+/* ── Prognosis Ring Chart ───────────────────────────── */
+.ring-chart-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 12px;
+}
+.ring-chart {
+  width: 140px;
+  height: 140px;
+}
+.ring-text-main {
+  fill: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+}
+.ring-text-label {
+  fill: var(--muted);
+  font-family: 'Barlow', sans-serif;
+  font-size: 7.5px;
+  letter-spacing: 1.5px;
+}
+.ring-text-goal {
+  fill: var(--accent);
+  font-family: 'Barlow', sans-serif;
+  font-size: 7px;
+}
+.ring-progress {
+  transition: stroke-dasharray 0.6s ease;
 }
