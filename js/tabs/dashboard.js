@@ -40,6 +40,10 @@ async function render() {
   const progS = Math.round((prognosisMin - progM) * 60);
   const prognosisStr = `${progM}:${String(progS).padStart(2, '0')}`;
 
+  // Ring: 0% at 78 min baseline, 100% at 68 min target (sub 68)
+  const circumference = 276; // 2 * π * 44 ≈ 276.46
+  const ringFill = Math.max(0, Math.min(circumference, ((78 - prognosisMin) / 10) * circumference));
+
   el().innerHTML = `
     <div class="screen-title">Dashboard · ${new Date().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
 
@@ -51,10 +55,20 @@ async function render() {
       </div>
     </div>
 
-    <div class="hero-card">
-      <div class="hero-label">Zielzeit-Prognose</div>
-      <div class="hero-value">${prognosisStr}</div>
-      <div class="hero-sub">Ziel: Sub 68:00 · ${daysLeft} Tage bis Race Day</div>
+    <div class="hero-card" style="text-align:center;border:1px solid var(--bg3);">
+      <div class="hero-label" style="margin-bottom:8px;">Zielzeit-Prognose</div>
+      <div class="ring-chart-wrap">
+        <svg viewBox="0 0 120 120" class="ring-chart">
+          <circle cx="60" cy="60" r="44" fill="none" stroke="var(--bg3)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="var(--accent)" stroke-width="8"
+            stroke-dasharray="${ringFill} ${circumference}" stroke-dashoffset="69"
+            stroke-linecap="round" transform="rotate(-90 60 60)" class="ring-progress"/>
+          <text x="60" y="57" text-anchor="middle" class="ring-text-main">${prognosisStr}</text>
+          <text x="60" y="69" text-anchor="middle" class="ring-text-label">PROGNOSE</text>
+          <text x="60" y="80" text-anchor="middle" class="ring-text-goal">Ziel: Sub 68:00</text>
+        </svg>
+      </div>
+      <div class="hero-sub">${daysLeft} Tage bis Race Day</div>
     </div>
 
     ${todaySession && todaySession.type !== 'ruhe' ? `
