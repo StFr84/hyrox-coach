@@ -1,5 +1,5 @@
-Chart.defaults.color = '#7a8099';
-Chart.defaults.borderColor = '#1e2230';
+Chart.defaults.color = '#4a5270';
+Chart.defaults.borderColor = '#1e2438';
 Chart.defaults.font.family = "'Barlow', system-ui, sans-serif";
 
 export function renderHRVChart(canvasId, entries) {
@@ -14,8 +14,8 @@ export function renderHRVChart(canvasId, entries) {
       datasets: [{
         label: 'HRV (RMSSD ms)',
         data: entries.map(e => e.rmssd),
-        borderColor: '#4ecb71',
-        backgroundColor: 'rgba(78,203,113,0.08)',
+        borderColor: '#39D98A',
+        backgroundColor: 'rgba(57,217,138,0.08)',
         borderWidth: 2,
         pointRadius: 4,
         tension: 0.4,
@@ -25,7 +25,7 @@ export function renderHRVChart(canvasId, entries) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
-      scales: { x: { grid: { color: '#1e2230' } }, y: { grid: { color: '#1e2230' }, beginAtZero: false } },
+      scales: { x: { grid: { color: '#1e2438' } }, y: { grid: { color: '#1e2438' }, beginAtZero: false } },
     },
   });
 }
@@ -50,8 +50,8 @@ export function renderWeeklyLoadChart(canvasId, sessions) {
       datasets: [{
         label: 'Session-RPE Punkte',
         data: Object.values(weeks),
-        backgroundColor: 'rgba(71,200,255,0.7)',
-        borderColor: '#47c8ff',
+        backgroundColor: 'rgba(96,165,250,0.7)',
+        borderColor: '#60A5FA',
         borderWidth: 1,
         borderRadius: 6,
       }],
@@ -59,7 +59,7 @@ export function renderWeeklyLoadChart(canvasId, sessions) {
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
-      scales: { x: { grid: { color: '#1e2230' } }, y: { grid: { color: '#1e2230' }, beginAtZero: true } },
+      scales: { x: { grid: { color: '#1e2438' } }, y: { grid: { color: '#1e2438' }, beginAtZero: true } },
     },
   });
 }
@@ -72,8 +72,8 @@ export function renderDistributionChart(canvasId, sessions) {
   const counts = {};
   sessions.forEach(s => { counts[s.type] = (counts[s.type] || 0) + 1; });
   const COLORS = {
-    laufen: '#4ecb71', kraft: '#47c8ff', hyrox: '#e8ff47',
-    skierg: '#ffb347', rowing: '#ff8c47', erholung: '#7a8099', concurrent: '#ff6b6b',
+    laufen: '#39D98A', kraft: '#60A5FA', hyrox: '#F59E0B',
+    skierg: '#F59E0B', rowing: '#60A5FA', erholung: '#4a5270', concurrent: '#EF4444',
   };
   new Chart(canvas, {
     type: 'doughnut',
@@ -81,7 +81,7 @@ export function renderDistributionChart(canvasId, sessions) {
       labels: Object.keys(counts),
       datasets: [{
         data: Object.values(counts),
-        backgroundColor: Object.keys(counts).map(k => COLORS[k] || '#7a8099'),
+        backgroundColor: Object.keys(counts).map(k => COLORS[k] || '#4a5270'),
         borderWidth: 0,
       }],
     },
@@ -111,8 +111,8 @@ export function renderPaceChart(canvasId, sessions) {
       datasets: [{
         label: 'Pace (min/km)',
         data: running.map(s => toDecimal(s.pace_per_km)),
-        borderColor: '#e8ff47',
-        backgroundColor: 'rgba(232,255,71,0.06)',
+        borderColor: '#39D98A',
+        backgroundColor: 'rgba(57,217,138,0.06)',
         borderWidth: 2,
         pointRadius: 4,
         tension: 0.3,
@@ -123,8 +123,8 @@ export function renderPaceChart(canvasId, sessions) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: '#1e2230' } },
-        y: { grid: { color: '#1e2230' }, reverse: true, ticks: { callback: v => `${Math.floor(v)}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}` } },
+        x: { grid: { color: '#1e2438' } },
+        y: { grid: { color: '#1e2438' }, reverse: true, ticks: { callback: v => `${Math.floor(v)}:${String(Math.round((v % 1) * 60)).padStart(2, '0')}` } },
       },
     },
   });
@@ -166,8 +166,8 @@ export function renderRunProgressChart(canvasId, sessions) {
         {
           label: 'Pace (min/km)',
           data: paceData,
-          borderColor: '#e8ff47',
-          backgroundColor: 'rgba(232,255,71,0.06)',
+          borderColor: '#39D98A',
+          backgroundColor: 'rgba(57,217,138,0.06)',
           borderWidth: 2,
           pointRadius: 3,
           tension: 0.3,
@@ -177,8 +177,8 @@ export function renderRunProgressChart(canvasId, sessions) {
         ...(hasHR ? [{
           label: 'Ø HF (bpm)',
           data: hrData,
-          borderColor: '#47c8ff',
-          backgroundColor: 'rgba(71,200,255,0.06)',
+          borderColor: '#60A5FA',
+          backgroundColor: 'rgba(96,165,250,0.06)',
           borderWidth: 2,
           pointRadius: 3,
           tension: 0.3,
@@ -193,17 +193,17 @@ export function renderRunProgressChart(canvasId, sessions) {
         legend: {
           display: hasHR,
           position: 'top',
-          labels: { padding: 8, font: { size: 10 }, color: '#7a8099' },
+          labels: { padding: 8, font: { size: 10 }, color: '#4a5270' },
         },
       },
       scales: {
-        x: { grid: { color: '#1e2230' } },
+        x: { grid: { color: '#1e2438' } },
         yPace: {
           type: 'linear', position: 'left',
           reverse: true,
-          grid: { color: '#1e2230' },
+          grid: { color: '#1e2438' },
           ticks: {
-            color: '#e8ff47',
+            color: '#39D98A',
             callback: v => { const sec = Math.round((v % 1) * 60); const min = Math.floor(v) + Math.floor(sec / 60); return `${min}:${String(sec % 60).padStart(2, '0')}`; },
           },
         },
@@ -211,7 +211,7 @@ export function renderRunProgressChart(canvasId, sessions) {
           type: 'linear', position: 'right',
           display: hasHR,
           grid: { display: false },
-          ticks: { color: '#47c8ff' },
+          ticks: { color: '#60A5FA' },
         },
       },
     },
@@ -232,8 +232,8 @@ export function renderStrengthMiniChart(canvasId, dataPoints) {
       ),
       datasets: [{
         data: dataPoints.map(d => d.avgKg),
-        borderColor: '#e8ff47',
-        backgroundColor: 'rgba(232,255,71,0.06)',
+        borderColor: '#39D98A',
+        backgroundColor: 'rgba(57,217,138,0.06)',
         borderWidth: 2,
         pointRadius: 3,
         tension: 0.3,
@@ -244,8 +244,8 @@ export function renderStrengthMiniChart(canvasId, dataPoints) {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: '#1e2230' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
-        y: { grid: { color: '#1e2230' }, beginAtZero: false, ticks: { font: { size: 9 }, maxTicksLimit: 3 } },
+        x: { grid: { color: '#1e2438' }, ticks: { font: { size: 9 }, maxTicksLimit: 5 } },
+        y: { grid: { color: '#1e2438' }, beginAtZero: false, ticks: { font: { size: 9 }, maxTicksLimit: 3 } },
       },
     },
   });
