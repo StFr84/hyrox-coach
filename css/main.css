@@ -108,16 +108,7 @@ h2 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; }
   overflow: hidden;
 }
 .hero-card::before {
-  content: 'SUB 68';
-  position: absolute;
-  right: -8px; top: 50%;
-  transform: translateY(-50%);
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 3.8em;
-  font-weight: 900;
-  color: rgba(232, 255, 71, 0.05);
-  letter-spacing: -0.02em;
-  pointer-events: none;
+  display: none;
 }
 .hero-label {
   font-size: 0.68em;

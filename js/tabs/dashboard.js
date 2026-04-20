@@ -61,7 +61,7 @@ async function render() {
         <svg viewBox="0 0 120 120" class="ring-chart">
           <circle cx="60" cy="60" r="44" fill="none" stroke="var(--bg3)" stroke-width="8"/>
           <circle cx="60" cy="60" r="44" fill="none" stroke="var(--accent)" stroke-width="8"
-            stroke-dasharray="${ringFill} ${circumference}" stroke-dashoffset="69"
+            stroke-dasharray="${ringFill} ${circumference}"
             stroke-linecap="round" transform="rotate(-90 60 60)" class="ring-progress"/>
           <text x="60" y="57" text-anchor="middle" class="ring-text-main">${prognosisStr}</text>
           <text x="60" y="69" text-anchor="middle" class="ring-text-label">PROGNOSE</text>
